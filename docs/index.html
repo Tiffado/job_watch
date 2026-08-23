@@ -140,6 +140,36 @@
   button.unsave-btn { background: #f1ece1; color: var(--navy); }
   .actions { flex-wrap: wrap; }
   .actions button { flex: 1 1 28%; min-width: 96px; }
+  .analyze-row { margin-bottom: 10px; }
+  button.analyze-btn {
+    background: none;
+    border: 1px solid var(--navy-light);
+    color: var(--navy-light);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button.analyze-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .analysis-result {
+    background: #fbf8f0;
+    border: 1px solid #e9dfc4;
+    border-radius: 9px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .analysis-result.error {
+    background: #faeceb;
+    border-color: #e3c3bf;
+    color: var(--red);
+  }
   .card.expired {
     opacity: 0.6;
     background: #f1efe9;
@@ -199,13 +229,16 @@
     color: #55503f;
     margin-top: 10px;
   }
-  #settings-panel input {
+  #settings-panel input,
+  #settings-panel textarea {
     width: 100%;
     padding: 9px 10px;
     border: 1px solid var(--line);
     border-radius: 8px;
     font-size: 14px;
+    font-family: inherit;
     margin-top: 4px;
+    box-sizing: border-box;
   }
   #settings-panel button {
     margin-top: 14px;
@@ -290,6 +323,7 @@ const LS_KEY = "jobwatch_config";
 let config = JSON.parse(localStorage.getItem(LS_KEY) || "null");
 let feed = [];
 let currentTab = "new";
+const analysisCache = {}; // { [jobId]: { status: "loading"|"done"|"error", text: "" } }
 
 function toast(msg) {
   const t = document.getElementById("toast");
@@ -308,19 +342,32 @@ function renderSettings() {
     <div id="settings-panel">
       <h2>Connexion à ton repo GitHub</h2>
       <label>Propriétaire (ton pseudo GitHub)</label>
-      <input id="cfg-owner" placeholder="Tiffado" value="${config?.owner || "Tiffado"}" />
+      <input id="cfg-owner" placeholder="ex: lionelb59" value="${config?.owner || "Tiffado"}" />
       <label>Nom du repo</label>
-      <input id="cfg-repo" placeholder="job_watch" value="${config?.repo || "job_watch"}" />
+      <input id="cfg-repo" placeholder="ex: Job_Watch" value="${config?.repo || "job_watch"}" />
       <label>Branche</label>
       <input id="cfg-branch" placeholder="main" value="${config?.branch || "main"}" />
       <label>Personal Access Token (fine-grained, Contents: Read & write)</label>
       <input id="cfg-token" type="password" placeholder="github_pat_..." value="${config?.token || ""}" />
-      <button id="cfg-save">Enregistrer</button>
       <div class="hint">
         Le token reste uniquement sur ton téléphone (stocké localement dans le
         navigateur), il n'est jamais envoyé ailleurs qu'à GitHub. Crée-le sur
         github.com → Settings → Developer settings → Fine-grained tokens,
         limité à ce seul repo, permission "Contents: Read and write".
+      </div>
+    </div>
+    <div id="settings-panel">
+      <h2>Analyse des offres (Claude)</h2>
+      <label>Clé API Anthropic</label>
+      <input id="cfg-claude-key" type="password" placeholder="sk-ant-..." value="${config?.claudeApiKey || ""}" />
+      <label>Ton profil / CV (collé en texte)</label>
+      <textarea id="cfg-cv" rows="6" placeholder="Colle ici ton profil ou ton CV en texte...">${config?.cvText ? escapeHtml(config.cvText) : ""}</textarea>
+      <button id="cfg-save">Enregistrer</button>
+      <div class="hint">
+        Ta clé API et ton CV restent uniquement sur ton téléphone, jamais
+        envoyés ailleurs qu'à l'API Claude au moment de chaque analyse.
+        Crée une clé sur console.anthropic.com → API Keys (compte séparé de
+        ton abonnement Claude Pro, facturé à l'usage).
       </div>
     </div>
   `;
@@ -330,6 +377,8 @@ function renderSettings() {
       repo: document.getElementById("cfg-repo").value.trim(),
       branch: document.getElementById("cfg-branch").value.trim() || "main",
       token: document.getElementById("cfg-token").value.trim(),
+      claudeApiKey: document.getElementById("cfg-claude-key").value.trim(),
+      cvText: document.getElementById("cfg-cv").value,
     };
     localStorage.setItem(LS_KEY, JSON.stringify(config));
     toast("Réglages enregistrés");
@@ -462,6 +511,10 @@ function render() {
       <h2>${escapeHtml(job.title)}</h2>
       <div class="meta">Vu le ${job.first_seen || "?"}${isExpired ? " · n'est plus en ligne" : ""}</div>
       <a class="open-link" href="${job.url}" target="_blank" rel="noopener">Voir l'offre →</a>
+      <div class="analyze-row">
+        ${renderAnalyzeButton(job)}
+        ${renderAnalysisResult(job)}
+      </div>
       <div class="actions">${actionsHtml}</div>
     </div>
   `;
@@ -470,6 +523,82 @@ function render() {
   main.querySelectorAll("button[data-action]").forEach(btn => {
     btn.addEventListener("click", () => setStatus(btn.dataset.id, btn.dataset.action));
   });
+  main.querySelectorAll("button[data-analyze]").forEach(btn => {
+    btn.addEventListener("click", () => analyzeJob(btn.dataset.analyze));
+  });
+}
+
+function renderAnalyzeButton(job) {
+  const state = analysisCache[job.id];
+  const loading = state?.status === "loading";
+  return `<button class="analyze-btn" data-analyze="${escapeAttr(job.id)}" ${loading ? "disabled" : ""}>
+    ${loading ? "⏳ Analyse en cours…" : "🔍 Analyser avec Claude"}
+  </button>`;
+}
+
+function renderAnalysisResult(job) {
+  const state = analysisCache[job.id];
+  if (!state || state.status === "loading") return "";
+  const cls = state.status === "error" ? "analysis-result error" : "analysis-result";
+  return `<div class="${cls}">${escapeHtml(state.text)}</div>`;
+}
+
+async function analyzeJob(jobId) {
+  const job = feed.find(j => j.id === jobId);
+  if (!job) return;
+
+  if (!config?.claudeApiKey || !config?.cvText) {
+    renderSettings();
+    toast("Renseigne ta clé API et ton CV dans les réglages");
+    return;
+  }
+
+  analysisCache[jobId] = { status: "loading", text: "" };
+  render();
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": config.claudeApiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-beta": "web-fetch-2025-09-10",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-5",
+        max_tokens: 700,
+        messages: [{
+          role: "user",
+          content:
+            `Voici mon profil / CV :\n\n${config.cvText}\n\n---\n\n` +
+            `Voici l'URL d'une offre d'emploi : ${job.url}\n\n` +
+            `Lis le contenu de cette page (fiche de poste) et donne un avis très concis ` +
+            `(5 lignes maximum) sur la correspondance avec mon profil : un niveau de match ` +
+            `global (fort / moyen / faible), 2-3 points de correspondance clés, et les écarts ` +
+            `principaux s'il y en a. Réponds directement, sans préambule ni formule de politesse.`,
+        }],
+        tools: [{ type: "web_fetch_20250910", name: "web_fetch", max_uses: 1 }],
+      }),
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error?.message || `Erreur HTTP ${resp.status}`);
+    }
+
+    const text = (data.content || [])
+      .filter(b => b.type === "text")
+      .map(b => b.text)
+      .join("\n")
+      .trim();
+
+    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue." };
+  } catch (e) {
+    analysisCache[jobId] = { status: "error", text: `Échec de l'analyse : ${e.message}` };
+  }
+  render();
 }
 
 function escapeHtml(s) {
