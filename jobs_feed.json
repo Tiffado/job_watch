@@ -130,7 +130,8 @@
     "title": "mot-clé data détecté sur la page (à vérifier manuellement)",
     "url": "https://www.shift-technology.com/careers",
     "first_seen": "2026-08-23",
-    "status": "new"
+    "status": "new",
+    "analysis": "Cette page n'est pas une fiche de poste : c'est la page générale \"Carrières\" de Shift Technology (entreprise d'IA pour l'assurance), sans description de mission ni compétences requises précises. Impossible d'évaluer un match réel sans l'offre spécifique. À noter tout de même : le secteur (assurance/data/IA) diffère de votre expérience bancaire, mais vos compétences data engineering (PySpark, Big Data, modélisation) resteraient probablement transférables selon le poste visé. Merci de fournir le lien direct vers l'annonce précise (ex: \"Data Engineer\") pour une analyse pertinente."
   },
   {
     "id": "https://careers.payfit.com/",
