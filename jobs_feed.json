@@ -5,7 +5,8 @@
     "title": "Data Full Stack",
     "url": "https://jobs.ashbyhq.com/alan/118f5ad8-5db5-48ec-940e-1a880b148f25",
     "first_seen": "2026-08-23",
-    "status": "applied"
+    "status": "applied",
+    "analysis": "**Match global : moyen**\n\n- **Points forts** : SQL/Python maîtrisés, appétence affichée pour l'analytics/data science, anglais courant (C2), et ton expérience Big Data/pipelines correspond bien à la dimension \"engineering\" du poste.\n- **Écarts principaux** : le poste \"Data Full Stack\" attend une pratique réelle sur les 3 volets (analytics, engineering, science), avec R et Snowflake en tant qu'usage courant (tu as seulement une formation Snowflake, pas d'expérience terrain) ; ton profil est très orienté engineering/production bancaire, avec peu de preuve concrète en analyse de données ou data science.\n- Le profil \"senior banque/Big Data classique\" peut sembler un peu décalé par rapport à la culture \"startup santé, stack nimble, ownership transverse\" recherchée par Alan."
   },
   {
     "id": "https://jobs.ashbyhq.com/alan/77e5ab0e-b939-4179-9461-e2e4b5ac9cbb",
