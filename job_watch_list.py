@@ -46,8 +46,7 @@ def fetch_lever(token: str):
 def fetch_lever_html(token: str):
     """
     Repli pour les sociétés qui exposent leur page Lever publique
-    (jobs.lever.co/TOKEN) mais bloquent l'API JSON (ex: Pennylane, 404
-    sur l'API alors que la page HTML fonctionne). Parse le HTML de la
+    (jobs.lever.co/TOKEN) mais bloquent l'API JSON. Parse le HTML de la
     page hébergée directement.
     """
     url = f"https://jobs.lever.co/{token}"
@@ -116,6 +115,9 @@ def fetch_teamtailor_html(url: str):
                 jobs.append({"title": title, "url": full_url})
                 seen_urls.add(href)
     return jobs
+
+
+def fetch_generic(url: str):
     """
     Repli générique : signale juste la présence du mot-clé sur la page,
     sans lien précis vers l'offre. À remplacer par greenhouse/lever/ashby
