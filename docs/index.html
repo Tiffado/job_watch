@@ -16,6 +16,8 @@
     --amber-dark: #b4711f;
     --red: #b3432f;
     --green: #3f7a5e;
+    --blue: #3a6ea5;
+    --blue-dark: #2c5580;
     --ink: #1c1c1c;
     --line: #e3ddd0;
   }
@@ -60,11 +62,12 @@
     border: none;
     background: transparent;
     color: #c7cfdd;
-    padding: 8px 6px;
+    padding: 8px 4px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
   }
   nav.tabs button.active {
     background: var(--paper);
@@ -132,17 +135,36 @@
     gap: 6px;
   }
   button.save-btn { background: var(--green); color: #fff; }
+  button.apply-btn { background: var(--blue); color: #fff; }
   button.delete-btn { background: #f1ece1; color: var(--red); }
   button.unsave-btn { background: #f1ece1; color: var(--navy); }
+  .actions { flex-wrap: wrap; }
+  .actions button { flex: 1 1 28%; min-width: 96px; }
   .card.expired {
     opacity: 0.6;
     background: #f1efe9;
   }
   .card.expired .company { color: #9a9483; }
+  .card.applied {
+    background: #eef3f8;
+    border-color: #cddce9;
+  }
   .badge-expired {
     display: inline-block;
     background: #ddd6c4;
     color: #6b6552;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    margin-left: 6px;
+  }
+  .badge-applied {
+    display: inline-block;
+    background: var(--blue);
+    color: #fff;
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -254,6 +276,7 @@
   <nav class="tabs">
     <button id="tab-new" class="active">À trier</button>
     <button id="tab-saved">Sauvegardées</button>
+    <button id="tab-applied">Postulé</button>
   </nav>
 </header>
 
@@ -363,7 +386,7 @@ async function loadFeed() {
     feed = json;
     currentSha = sha;
     document.getElementById("sub-status").textContent =
-      `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s)`;
+      `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)`;
     render();
   } catch (e) {
     document.getElementById("sub-status").textContent = "Erreur de chargement";
@@ -390,14 +413,20 @@ async function setStatus(id, newStatus) {
 
 function render() {
   const main = document.getElementById("main");
-  const list = currentTab === "new"
-    ? feed.filter(j => j.status === "new" || j.status === "expired")
-    : feed.filter(j => j.status === currentTab);
+  let list;
+  if (currentTab === "new") {
+    list = feed.filter(j => j.status === "new" || j.status === "expired");
+  } else {
+    list = feed.filter(j => j.status === currentTab);
+  }
 
   if (list.length === 0) {
-    main.innerHTML = currentTab === "new"
-      ? `<div class="empty">Rien à trier pour l'instant.<br>Reviens quand le script quotidien aura trouvé du nouveau.</div>`
-      : `<div class="empty">Aucune offre sauvegardée.</div>`;
+    const emptyMsg = {
+      new: "Rien à trier pour l'instant.<br>Reviens quand le script quotidien aura trouvé du nouveau.",
+      saved: "Aucune offre sauvegardée.",
+      applied: "Aucune candidature en cours.",
+    };
+    main.innerHTML = `<div class="empty">${emptyMsg[currentTab]}</div>`;
     return;
   }
 
@@ -405,21 +434,35 @@ function render() {
 
   main.innerHTML = list.map(job => {
     const isExpired = job.status === "expired";
+    const isApplied = job.status === "applied";
+
+    let actionsHtml;
+    if (currentTab === "new") {
+      actionsHtml = `
+        <button class="apply-btn" data-id="${escapeAttr(job.id)}" data-action="applied">📨 Postulé</button>
+        <button class="save-btn" data-id="${escapeAttr(job.id)}" data-action="saved">✓ Sauvegarder</button>
+        <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
+      `;
+    } else if (currentTab === "saved") {
+      actionsHtml = `
+        <button class="apply-btn" data-id="${escapeAttr(job.id)}" data-action="applied">📨 Postulé</button>
+        <button class="unsave-btn" data-id="${escapeAttr(job.id)}" data-action="new">↺ À trier</button>
+        <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
+      `;
+    } else {
+      actionsHtml = `
+        <button class="unsave-btn" data-id="${escapeAttr(job.id)}" data-action="new">↺ Remettre à trier</button>
+        <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
+      `;
+    }
+
     return `
-    <div class="card ${isExpired ? "expired" : ""}">
-      <div class="company">${escapeHtml(job.company)}${isExpired ? '<span class="badge-expired">Expirée</span>' : ""}</div>
+    <div class="card ${isExpired ? "expired" : ""} ${isApplied ? "applied" : ""}">
+      <div class="company">${escapeHtml(job.company)}${isExpired ? '<span class="badge-expired">Expirée</span>' : ""}${isApplied ? '<span class="badge-applied">Postulé</span>' : ""}</div>
       <h2>${escapeHtml(job.title)}</h2>
       <div class="meta">Vu le ${job.first_seen || "?"}${isExpired ? " · n'est plus en ligne" : ""}</div>
       <a class="open-link" href="${job.url}" target="_blank" rel="noopener">Voir l'offre →</a>
-      <div class="actions">
-        ${currentTab === "new" ? `
-          <button class="save-btn" data-id="${escapeAttr(job.id)}" data-action="saved">✓ Sauvegarder</button>
-          <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
-        ` : `
-          <button class="unsave-btn" data-id="${escapeAttr(job.id)}" data-action="new">↺ Remettre à trier</button>
-          <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
-        `}
-      </div>
+      <div class="actions">${actionsHtml}</div>
     </div>
   `;
   }).join("");
@@ -438,16 +481,24 @@ function escapeAttr(s) {
 
 document.getElementById("tab-new").onclick = () => {
   currentTab = "new";
-  document.getElementById("tab-new").classList.add("active");
-  document.getElementById("tab-saved").classList.remove("active");
+  setActiveTab();
   render();
 };
 document.getElementById("tab-saved").onclick = () => {
   currentTab = "saved";
-  document.getElementById("tab-saved").classList.add("active");
-  document.getElementById("tab-new").classList.remove("active");
+  setActiveTab();
   render();
 };
+document.getElementById("tab-applied").onclick = () => {
+  currentTab = "applied";
+  setActiveTab();
+  render();
+};
+function setActiveTab() {
+  ["new", "saved", "applied"].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle("active", t === currentTab);
+  });
+}
 document.getElementById("gear-btn").onclick = () => renderSettings();
 document.getElementById("refresh-btn").onclick = async (e) => {
   e.currentTarget.classList.add("spinning");
