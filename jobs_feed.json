@@ -123,7 +123,7 @@
     "title": "Data Engineer - M/W",
     "url": "https://careers.manomano.jobs/en-GB/jobs/8116589-data-engineer-m-w",
     "first_seen": "2026-08-23",
-    "status": "new",
+    "status": "saved",
     "analysis": "**Match global : moyen**\n\nPoints de correspondance : solide maîtrise Python/SQL, expérience pipelines data en environnement orchestré (Control-M/Airflow proches), pratique déjà installée des outils IA (Copilot), sensibilité qualité/modélisation des données, formation Snowflake déjà acquise en anticipation de leur stack.\n\nÉcarts principaux : le poste cible 2-4 ans d'expérience (profil senior ~10 ans, risque de sur-qualification), stack cible orientée Airflow/Kafka/S3/cloud plutôt que Hadoop/Talend/PySpark on-premise, et absence d'expérience mentionnée en environnement e-commerce/event-driven."
   },
   {
