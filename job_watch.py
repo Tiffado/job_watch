@@ -61,7 +61,7 @@ def fetch_lever(token: str):
 
 def fetch_lever_html(token: str):
     """Repli pour les sociétés qui bloquent l'API JSON Lever mais exposent
-    leur page publique jobs.lever.co/TOKEN (ex: Pennylane)."""
+    leur page publique jobs.lever.co/TOKEN."""
     url = f"https://jobs.lever.co/{token}"
     resp = requests.get(
         url,
