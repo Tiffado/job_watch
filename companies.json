@@ -6,38 +6,48 @@
   },
   {
     "name": "Alan",
-    "type": "generic",
-    "url": "https://alan.com/careers"
+    "type": "ashby",
+    "token": "alan"
+  },
+  {
+    "name": "Back Market",
+    "type": "ashby",
+    "token": "backmarket"
+  },
+  {
+    "name": "Contentsquare",
+    "type": "lever",
+    "token": "contentsquare"
+  },
+  {
+    "name": "Qonto",
+    "type": "lever",
+    "token": "qonto"
+  },
+  {
+    "name": "Pigment",
+    "type": "lever",
+    "token": "pigment"
+  },
+  {
+    "name": "Mirakl",
+    "type": "greenhouse",
+    "token": "mirakl"
+  },
+  {
+    "name": "Mirakl Labs",
+    "type": "greenhouse",
+    "token": "mirakllabs"
+  },
+  {
+    "name": "Pennylane",
+    "type": "lever",
+    "token": "pennylane"
   },
   {
     "name": "ManoMano",
     "type": "generic",
-    "url": "https://jobs.manomano.io"
-  },
-  {
-    "name": "Pigment",
-    "type": "generic",
-    "url": "https://www.pigment.com/fr/carrieres"
-  },
-  {
-    "name": "Contentsquare",
-    "type": "generic",
-    "url": "https://contentsquare.com/careers/"
-  },
-  {
-    "name": "Back Market",
-    "type": "generic",
-    "url": "https://www.backmarket.com/careers"
-  },
-  {
-    "name": "Mirakl",
-    "type": "generic",
-    "url": "https://www.mirakl.com/careers"
-  },
-  {
-    "name": "Qonto",
-    "type": "generic",
-    "url": "https://qonto.com/en/careers"
+    "url": "https://www.manomano.fr/recrutement"
   },
   {
     "name": "Shift Technology",
