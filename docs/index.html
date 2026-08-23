@@ -134,6 +134,23 @@
   button.save-btn { background: var(--green); color: #fff; }
   button.delete-btn { background: #f1ece1; color: var(--red); }
   button.unsave-btn { background: #f1ece1; color: var(--navy); }
+  .card.expired {
+    opacity: 0.6;
+    background: #f1efe9;
+  }
+  .card.expired .company { color: #9a9483; }
+  .badge-expired {
+    display: inline-block;
+    background: #ddd6c4;
+    color: #6b6552;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    margin-left: 6px;
+  }
   .status-bar {
     position: fixed;
     bottom: 0;
@@ -346,7 +363,7 @@ async function loadFeed() {
     feed = json;
     currentSha = sha;
     document.getElementById("sub-status").textContent =
-      `${feed.filter(j => j.status === "new").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s)`;
+      `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s)`;
     render();
   } catch (e) {
     document.getElementById("sub-status").textContent = "Erreur de chargement";
@@ -373,7 +390,9 @@ async function setStatus(id, newStatus) {
 
 function render() {
   const main = document.getElementById("main");
-  const list = feed.filter(j => j.status === currentTab);
+  const list = currentTab === "new"
+    ? feed.filter(j => j.status === "new" || j.status === "expired")
+    : feed.filter(j => j.status === currentTab);
 
   if (list.length === 0) {
     main.innerHTML = currentTab === "new"
@@ -384,11 +403,13 @@ function render() {
 
   list.sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""));
 
-  main.innerHTML = list.map(job => `
-    <div class="card">
-      <div class="company">${escapeHtml(job.company)}</div>
+  main.innerHTML = list.map(job => {
+    const isExpired = job.status === "expired";
+    return `
+    <div class="card ${isExpired ? "expired" : ""}">
+      <div class="company">${escapeHtml(job.company)}${isExpired ? '<span class="badge-expired">Expirée</span>' : ""}</div>
       <h2>${escapeHtml(job.title)}</h2>
-      <div class="meta">Vu le ${job.first_seen || "?"}</div>
+      <div class="meta">Vu le ${job.first_seen || "?"}${isExpired ? " · n'est plus en ligne" : ""}</div>
       <a class="open-link" href="${job.url}" target="_blank" rel="noopener">Voir l'offre →</a>
       <div class="actions">
         ${currentTab === "new" ? `
@@ -400,7 +421,8 @@ function render() {
         `}
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
   main.querySelectorAll("button[data-action]").forEach(btn => {
     btn.addEventListener("click", () => setStatus(btn.dataset.id, btn.dataset.action));
