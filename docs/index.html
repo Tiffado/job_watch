@@ -170,6 +170,11 @@
     border-color: #e3c3bf;
     color: var(--red);
   }
+  .saving-tag {
+    font-size: 11px;
+    color: #8a8474;
+    margin-top: 4px;
+  }
   .card.expired {
     opacity: 0.6;
     background: #f1efe9;
@@ -572,7 +577,8 @@ function renderAnalysisResult(job) {
   if (!state || state.status === "loading") return "";
   if (state.status === "done" && state.expanded === false) return "";
   const cls = state.status === "error" ? "analysis-result error" : "analysis-result";
-  return `<div class="${cls}">${escapeHtml(state.text)}</div>`;
+  const savingTag = state.saving ? `<div class="saving-tag">💾 Sauvegarde en cours, patiente avant de rafraîchir…</div>` : "";
+  return `<div class="${cls}">${escapeHtml(state.text)}</div>${savingTag}`;
 }
 
 function toggleAnalysis(jobId) {
@@ -633,9 +639,16 @@ async function analyzeJob(jobId) {
       .join("\n")
       .trim();
 
-    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue.", expanded: true };
+    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue.", expanded: true, saving: true };
     render();
-    saveAnalysisToFeed(jobId, analysisCache[jobId].text); // persistance en arrière-plan, sans bloquer l'affichage
+    try {
+      await saveAnalysisToFeed(jobId, analysisCache[jobId].text);
+    } finally {
+      if (analysisCache[jobId]) {
+        analysisCache[jobId].saving = false;
+        render();
+      }
+    }
     return;
   } catch (e) {
     analysisCache[jobId] = { status: "error", text: `Échec de l'analyse : ${e.message}` };
