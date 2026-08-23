@@ -97,7 +97,8 @@
     "title": "Engineering Data Analyst",
     "url": "https://jobs.lever.co/pigment/7e376574-6715-4226-99a8-c72d64d8a305",
     "first_seen": "2026-08-23",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : moyen**\n\nPoints de correspondance :\n- Solide expertise en modélisation de données (schémas étoile/flocon, facts/dimensions) et SQL avancé, directement pertinente pour le poste.\n- Expérience Snowflake (formation) et outils modernes (Git, CI/CD) alignés avec la stack demandée.\n- Appétence affichée pour l'analytics, en cohérence avec la dimension \"Data Analyst\" du rôle.\n\nÉcarts principaux :\n- Poste orienté Analytics/BI pur (analyses, reporting, communication non-technique) plutôt que Data Engineering pipelines/Big Data, cœur de métier actuel.\n- Pas d'expérience explicite en dbt, ni en contexte B2B SaaS / partenariat direct avec des équipes Engineering (DevEx, FinOps, observabilité)."
   },
   {
     "id": "https://job-boards.greenhouse.io/mirakllabs/jobs/6129776004",
