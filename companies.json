@@ -1,1 +1,52 @@
-
+[
+  {
+    "name": "Sorare",
+    "type": "ashby",
+    "token": "Sorare"
+  },
+  {
+    "name": "Alan",
+    "type": "generic",
+    "url": "https://alan.com/careers"
+  },
+  {
+    "name": "ManoMano",
+    "type": "generic",
+    "url": "https://jobs.manomano.io"
+  },
+  {
+    "name": "Pigment",
+    "type": "generic",
+    "url": "https://www.pigment.com/fr/carrieres"
+  },
+  {
+    "name": "Contentsquare",
+    "type": "generic",
+    "url": "https://contentsquare.com/careers/"
+  },
+  {
+    "name": "Back Market",
+    "type": "generic",
+    "url": "https://www.backmarket.com/careers"
+  },
+  {
+    "name": "Mirakl",
+    "type": "generic",
+    "url": "https://www.mirakl.com/careers"
+  },
+  {
+    "name": "Qonto",
+    "type": "generic",
+    "url": "https://qonto.com/en/careers"
+  },
+  {
+    "name": "Shift Technology",
+    "type": "generic",
+    "url": "https://www.shift-technology.com/careers"
+  },
+  {
+    "name": "PayFit",
+    "type": "generic",
+    "url": "https://careers.payfit.com/"
+  }
+]
