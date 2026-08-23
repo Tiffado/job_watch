@@ -434,6 +434,12 @@ async function loadFeed() {
     const { json, sha } = await githubGetFile();
     feed = json;
     currentSha = sha;
+    // Restaure les analyses déjà sauvegardées, repliées par défaut
+    feed.forEach(j => {
+      if (j.analysis) {
+        analysisCache[j.id] = { status: "done", text: j.analysis, expanded: false };
+      }
+    });
     document.getElementById("sub-status").textContent =
       `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)`;
     render();
@@ -443,6 +449,11 @@ async function loadFeed() {
   }
 }
 
+async function persistFeed(commitMessage) {
+  const result = await githubPutFile(feed, currentSha, commitMessage);
+  currentSha = result.content.sha;
+}
+
 async function setStatus(id, newStatus) {
   const entry = feed.find(j => j.id === id);
   if (!entry) return;
@@ -450,13 +461,23 @@ async function setStatus(id, newStatus) {
   entry.status = newStatus;
   render(); // optimistic UI update
   try {
-    const result = await githubPutFile(feed, currentSha, `Update ${entry.title} -> ${newStatus}`);
-    currentSha = result.content.sha;
+    await persistFeed(`Update ${entry.title} -> ${newStatus}`);
     toast(newStatus === "saved" ? "Sauvegardée" : newStatus === "deleted" ? "Supprimée" : "Remise à trier");
   } catch (e) {
     entry.status = prevStatus; // rollback
     render();
     toast("Échec de la sauvegarde, réessaie");
+  }
+}
+
+async function saveAnalysisToFeed(jobId, text) {
+  const entry = feed.find(j => j.id === jobId);
+  if (!entry) return;
+  entry.analysis = text;
+  try {
+    await persistFeed(`Add analysis for ${entry.title}`);
+  } catch (e) {
+    toast("Analyse affichée mais pas sauvegardée (erreur GitHub)");
   }
 }
 
@@ -613,6 +634,9 @@ async function analyzeJob(jobId) {
       .trim();
 
     analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue.", expanded: true };
+    render();
+    saveAnalysisToFeed(jobId, analysisCache[jobId].text); // persistance en arrière-plan, sans bloquer l'affichage
+    return;
   } catch (e) {
     analysisCache[jobId] = { status: "error", text: `Échec de l'analyse : ${e.message}` };
   }
