@@ -211,12 +211,27 @@
     font-size: 20px;
     cursor: pointer;
   }
+  .refresh {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 18px);
+    right: 54px;
+    background: none;
+    border: none;
+    color: #b9c3d6;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+  }
+  .refresh.spinning {
+    transform: rotate(360deg);
+  }
 </style>
 </head>
 <body>
 
 <header>
   <button class="gear" id="gear-btn" title="Réglages">⚙</button>
+  <button class="refresh" id="refresh-btn" title="Rafraîchir">⟳</button>
   <h1>Job Watch</h1>
   <div class="sub" id="sub-status">Chargement…</div>
   <nav class="tabs">
@@ -253,9 +268,9 @@ function renderSettings() {
     <div id="settings-panel">
       <h2>Connexion à ton repo GitHub</h2>
       <label>Propriétaire (ton pseudo GitHub)</label>
-      <input id="cfg-owner" placeholder="Tiffado" value="${config?.owner || ""}" />
+      <input id="cfg-owner" placeholder="Tiffado" value="${config?.owner || "Tiffado"}" />
       <label>Nom du repo</label>
-      <input id="cfg-repo" placeholder="job_Watch" value="${config?.repo || ""}" />
+      <input id="cfg-repo" placeholder="job_watch" value="${config?.repo || "job_watch"}" />
       <label>Branche</label>
       <input id="cfg-branch" placeholder="main" value="${config?.branch || "main"}" />
       <label>Personal Access Token (fine-grained, Contents: Read & write)</label>
@@ -412,6 +427,11 @@ document.getElementById("tab-saved").onclick = () => {
   render();
 };
 document.getElementById("gear-btn").onclick = () => renderSettings();
+document.getElementById("refresh-btn").onclick = async (e) => {
+  e.currentTarget.classList.add("spinning");
+  await loadFeed();
+  setTimeout(() => e.currentTarget.classList.remove("spinning"), 400);
+};
 
 loadFeed();
 
