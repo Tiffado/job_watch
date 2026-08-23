@@ -2,13 +2,11 @@ name: Job Watch
 
 on:
   schedule:
-    # Tous les jours à 8h00 heure de Paris (7h00 UTC en hiver, 6h00 UTC en été
-    # -- GitHub ne gère pas le changement d'heure, 7h UTC est un bon compromis)
-    - cron: "0 7 * * *"
-  workflow_dispatch: {}   # permet de lancer le check manuellement depuis GitHub / l'app mobile
+    - cron: "0 7 * * *"   # ~8h heure de Paris
+  workflow_dispatch: {}
 
 permissions:
-  contents: write   # nécessaire pour que le workflow puisse committer le snapshot mis à jour
+  contents: write
 
 jobs:
   check:
@@ -20,17 +18,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: pip install requests
+      - run: pip install requests beautifulsoup4
 
       - name: Run job watch
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: python job_watch.py
 
-      - name: Save updated snapshot
+      - name: Save updated feed
         run: |
           git config user.name "job-watch-bot"
           git config user.email "job-watch-bot@users.noreply.github.com"
-          git add snapshot.json
-          git diff --quiet --cached || git commit -m "Update snapshot [skip ci]"
+          git add jobs_feed.json
+          git diff --quiet --cached || git commit -m "Update jobs feed [skip ci]"
           git push
