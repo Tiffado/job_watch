@@ -526,21 +526,39 @@ function render() {
   main.querySelectorAll("button[data-analyze]").forEach(btn => {
     btn.addEventListener("click", () => analyzeJob(btn.dataset.analyze));
   });
+  main.querySelectorAll("button[data-toggle]").forEach(btn => {
+    btn.addEventListener("click", () => toggleAnalysis(btn.dataset.toggle));
+  });
 }
 
 function renderAnalyzeButton(job) {
   const state = analysisCache[job.id];
-  const loading = state?.status === "loading";
-  return `<button class="analyze-btn" data-analyze="${escapeAttr(job.id)}" ${loading ? "disabled" : ""}>
-    ${loading ? "⏳ Analyse en cours…" : "🔍 Analyser avec Claude"}
-  </button>`;
+  if (!state) {
+    return `<button class="analyze-btn" data-analyze="${escapeAttr(job.id)}">🔍 Analyser avec Claude</button>`;
+  }
+  if (state.status === "loading") {
+    return `<button class="analyze-btn" disabled>⏳ Analyse en cours…</button>`;
+  }
+  if (state.status === "error") {
+    return `<button class="analyze-btn" data-analyze="${escapeAttr(job.id)}">🔁 Réessayer l'analyse</button>`;
+  }
+  const expanded = state.expanded !== false;
+  return `<button class="analyze-btn" data-toggle="${escapeAttr(job.id)}">${expanded ? "▲ Masquer l'analyse" : "▼ Voir l'analyse"}</button>`;
 }
 
 function renderAnalysisResult(job) {
   const state = analysisCache[job.id];
   if (!state || state.status === "loading") return "";
+  if (state.status === "done" && state.expanded === false) return "";
   const cls = state.status === "error" ? "analysis-result error" : "analysis-result";
   return `<div class="${cls}">${escapeHtml(state.text)}</div>`;
+}
+
+function toggleAnalysis(jobId) {
+  const state = analysisCache[jobId];
+  if (!state) return;
+  state.expanded = state.expanded === false;
+  render();
 }
 
 async function analyzeJob(jobId) {
@@ -594,7 +612,7 @@ async function analyzeJob(jobId) {
       .join("\n")
       .trim();
 
-    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue." };
+    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue.", expanded: true };
   } catch (e) {
     analysisCache[jobId] = { status: "error", text: `Échec de l'analyse : ${e.message}` };
   }
