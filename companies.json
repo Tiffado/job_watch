@@ -40,11 +40,6 @@
     "token": "mirakllabs"
   },
   {
-    "name": "Pennylane",
-    "type": "lever_html",
-    "token": "pennylane"
-  },
-  {
     "name": "ManoMano",
     "type": "teamtailor_html",
     "url": "https://careers.manomano.jobs/jobs"
