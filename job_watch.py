@@ -15,10 +15,12 @@ mais fonctionne aussi en local : `python3 job_watch.py`
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
 import requests
+from bs4 import BeautifulSoup
 
 HERE = Path(__file__).parent
 COMPANIES_FILE = HERE / "companies.json"
@@ -57,6 +59,33 @@ def fetch_lever(token: str):
     return [{"title": j["text"], "url": j["hostedUrl"], "id": j["id"]} for j in data]
 
 
+def fetch_lever_html(token: str):
+    """Repli pour les sociétés qui bloquent l'API JSON Lever mais exposent
+    leur page publique jobs.lever.co/TOKEN (ex: Pennylane)."""
+    url = f"https://jobs.lever.co/{token}"
+    resp = requests.get(
+        url,
+        timeout=20,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+    )
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.text, "html.parser")
+    jobs = []
+    for a in soup.select("a.posting-title"):
+        title_el = a.select_one("h5")
+        title = title_el.get_text(strip=True) if title_el else a.get_text(strip=True)
+        href = a.get("href", url)
+        jobs.append({"title": title, "url": href, "id": href})
+    return jobs
+
+
 def fetch_ashby(token: str):
     url = f"https://api.ashbyhq.com/posting-api/job-board/{token}"
     resp = requests.get(url, timeout=20)
@@ -72,6 +101,35 @@ def fetch_ashby(token: str):
     ]
 
 
+def fetch_teamtailor_html(url: str):
+    """Sites Teamtailor (ex: ManoMano) : page /jobs en HTML statique."""
+    resp = requests.get(
+        url,
+        timeout=20,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+    )
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.text, "html.parser")
+    jobs = []
+    seen = set()
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if re.search(r"/jobs/\d+-", href):
+            title = a.get_text(strip=True)
+            if title and href not in seen:
+                full_url = href if href.startswith("http") else f"https://careers.manomano.jobs{href}"
+                jobs.append({"title": title, "url": full_url, "id": full_url})
+                seen.add(href)
+    return jobs
+
+
 def fetch_generic(url: str):
     """
     Repli générique et volontairement prudent : télécharge la page et
@@ -79,7 +137,18 @@ def fetch_generic(url: str):
     vers l'offre. À remplacer par greenhouse/lever/ashby dès que tu as
     identifié la vraie plateforme de la société (voir README.md).
     """
-    resp = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+    resp = requests.get(
+        url,
+        timeout=20,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+    )
     resp.raise_for_status()
     html = resp.text.lower()
     found = any(k in html for k in KEYWORDS)
@@ -94,6 +163,10 @@ def fetch_jobs(company: dict):
             return fetch_greenhouse(company["token"])
         if company["type"] == "lever":
             return fetch_lever(company["token"])
+        if company["type"] == "lever_html":
+            return fetch_lever_html(company["token"])
+        if company["type"] == "teamtailor_html":
+            return fetch_teamtailor_html(company["url"])
         if company["type"] == "ashby":
             return fetch_ashby(company["token"])
         return fetch_generic(company["url"])
@@ -161,6 +234,8 @@ def send_ntfy(new_jobs_by_company: dict):
 # ---------------------------------------------------------------------------
 
 def main():
+    debug = os.environ.get("JOBWATCH_DEBUG") == "1"
+
     companies = load_companies()
     snapshot = load_snapshot()
     new_snapshot = {}
@@ -171,6 +246,13 @@ def main():
         jobs = fetch_jobs(company)
         matching = [j for j in jobs if matches_keywords(j["title"])]
 
+        if debug:
+            print(f"\n== {name} ({company['type']}) — {len(jobs)} offre(s) au total, {len(matching)} matchant 'data' ==")
+            for j in matching:
+                print(f"  - {j['title']}\n    {j['url']}")
+            if not matching and not jobs:
+                print("  (rien récupéré — vérifie le type/token/url dans companies.json)")
+
         seen_ids = set(snapshot.get(name, []))
         current_ids = {j["id"] for j in matching}
         new_ids = current_ids - seen_ids
@@ -179,6 +261,10 @@ def main():
             new_jobs_by_company[name] = [j for j in matching if j["id"] in new_ids]
 
         new_snapshot[name] = list(current_ids)
+
+    if debug:
+        print("\n[DEBUG] Mode debug actif : snapshot NON mis à jour, aucune notification envoyée.")
+        return
 
     if new_jobs_by_company:
         send_ntfy(new_jobs_by_company)
