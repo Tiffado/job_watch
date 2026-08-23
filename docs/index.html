@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Job Watch</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#12213b" />
+<link rel="apple-touch-icon" href="icon.png" />
+<style>
+  :root {
+    --navy: #12213b;
+    --navy-light: #1f3864;
+    --paper: #f6f4ef;
+    --amber: #d98e39;
+    --amber-dark: #b4711f;
+    --red: #b3432f;
+    --green: #3f7a5e;
+    --ink: #1c1c1c;
+    --line: #e3ddd0;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  header {
+    background: var(--navy);
+    color: var(--paper);
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  header .sub {
+    margin-top: 2px;
+    font-size: 13px;
+    color: #b9c3d6;
+  }
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 14px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 3px;
+  }
+  nav.tabs button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #c7cfdd;
+    padding: 8px 6px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  nav.tabs button.active {
+    background: var(--paper);
+    color: var(--navy);
+  }
+  main {
+    padding: 14px 14px 100px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .empty {
+    text-align: center;
+    color: #8a8474;
+    padding: 60px 20px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .card .company {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--amber-dark);
+  }
+  .card h2 {
+    font-size: 16px;
+    margin: 4px 0 2px;
+    line-height: 1.3;
+  }
+  .card .meta {
+    font-size: 12px;
+    color: #8a8474;
+    margin-bottom: 10px;
+  }
+  .card a.open-link {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--navy-light);
+    text-decoration: none;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--navy-light);
+  }
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
+  .actions button {
+    flex: 1;
+    border: none;
+    border-radius: 9px;
+    padding: 11px 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  button.save-btn { background: var(--green); color: #fff; }
+  button.delete-btn { background: #f1ece1; color: var(--red); }
+  button.unsave-btn { background: #f1ece1; color: var(--navy); }
+  .status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 16px calc(env(safe-area-inset-bottom, 0px) + 10px);
+    font-size: 12px;
+    color: #8a8474;
+    text-align: center;
+    background: linear-gradient(to top, var(--paper) 60%, transparent);
+  }
+  #settings-panel {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  #settings-panel h2 { font-size: 15px; margin: 0 0 10px; }
+  #settings-panel label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #55503f;
+    margin-top: 10px;
+  }
+  #settings-panel input {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  #settings-panel button {
+    margin-top: 14px;
+    width: 100%;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px;
+    border-radius: 9px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #settings-panel .hint {
+    font-size: 11px;
+    color: #8a8474;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 70px;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .toast.show { opacity: 1; }
+  .gear {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 18px);
+    right: 18px;
+    background: none;
+    border: none;
+    color: #b9c3d6;
+    font-size: 20px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="gear" id="gear-btn" title="Réglages">⚙</button>
+  <h1>Job Watch</h1>
+  <div class="sub" id="sub-status">Chargement…</div>
+  <nav class="tabs">
+    <button id="tab-new" class="active">À trier</button>
+    <button id="tab-saved">Sauvegardées</button>
+  </nav>
+</header>
+
+<main id="main"></main>
+
+<div class="status-bar" id="status-bar"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LS_KEY = "jobwatch_config";
+let config = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+let feed = [];
+let currentTab = "new";
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+function needsSetup() {
+  return !config || !config.owner || !config.repo || !config.token;
+}
+
+function renderSettings() {
+  const main = document.getElementById("main");
+  main.innerHTML = `
+    <div id="settings-panel">
+      <h2>Connexion à ton repo GitHub</h2>
+      <label>Propriétaire (ton pseudo GitHub)</label>
+      <input id="cfg-owner" placeholder="ex: lionelb59" value="${config?.owner || ""}" />
+      <label>Nom du repo</label>
+      <input id="cfg-repo" placeholder="ex: Job_Watch" value="${config?.repo || ""}" />
+      <label>Branche</label>
+      <input id="cfg-branch" placeholder="main" value="${config?.branch || "main"}" />
+      <label>Personal Access Token (fine-grained, Contents: Read & write)</label>
+      <input id="cfg-token" type="password" placeholder="github_pat_..." value="${config?.token || ""}" />
+      <button id="cfg-save">Enregistrer</button>
+      <div class="hint">
+        Le token reste uniquement sur ton téléphone (stocké localement dans le
+        navigateur), il n'est jamais envoyé ailleurs qu'à GitHub. Crée-le sur
+        github.com → Settings → Developer settings → Fine-grained tokens,
+        limité à ce seul repo, permission "Contents: Read and write".
+      </div>
+    </div>
+  `;
+  document.getElementById("cfg-save").onclick = () => {
+    config = {
+      owner: document.getElementById("cfg-owner").value.trim(),
+      repo: document.getElementById("cfg-repo").value.trim(),
+      branch: document.getElementById("cfg-branch").value.trim() || "main",
+      token: document.getElementById("cfg-token").value.trim(),
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(config));
+    toast("Réglages enregistrés");
+    loadFeed();
+  };
+}
+
+async function githubGetFile() {
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/jobs_feed.json?ref=${config.branch}`;
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+    },
+  });
+  if (!res.ok) throw new Error(`GitHub GET ${res.status}`);
+  const data = await res.json();
+  const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ""))));
+  return { json: JSON.parse(content), sha: data.sha };
+}
+
+async function githubPutFile(newFeed, sha, message) {
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/jobs_feed.json`;
+  const body = {
+    message,
+    branch: config.branch,
+    sha,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(newFeed, null, 2)))),
+  };
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`GitHub PUT ${res.status}`);
+  return res.json();
+}
+
+let currentSha = null;
+
+async function loadFeed() {
+  if (needsSetup()) {
+    renderSettings();
+    document.getElementById("sub-status").textContent = "Configuration requise";
+    return;
+  }
+  document.getElementById("sub-status").textContent = "Chargement…";
+  try {
+    const { json, sha } = await githubGetFile();
+    feed = json;
+    currentSha = sha;
+    document.getElementById("sub-status").textContent =
+      `${feed.filter(j => j.status === "new").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s)`;
+    render();
+  } catch (e) {
+    document.getElementById("sub-status").textContent = "Erreur de chargement";
+    document.getElementById("main").innerHTML = `<div class="empty">Impossible de charger jobs_feed.json.<br>Vérifie tes réglages (⚙) et que le fichier existe bien dans le repo.<br><br>${e.message}</div>`;
+  }
+}
+
+async function setStatus(id, newStatus) {
+  const entry = feed.find(j => j.id === id);
+  if (!entry) return;
+  const prevStatus = entry.status;
+  entry.status = newStatus;
+  render(); // optimistic UI update
+  try {
+    const result = await githubPutFile(feed, currentSha, `Update ${entry.title} -> ${newStatus}`);
+    currentSha = result.content.sha;
+    toast(newStatus === "saved" ? "Sauvegardée" : newStatus === "deleted" ? "Supprimée" : "Remise à trier");
+  } catch (e) {
+    entry.status = prevStatus; // rollback
+    render();
+    toast("Échec de la sauvegarde, réessaie");
+  }
+}
+
+function render() {
+  const main = document.getElementById("main");
+  const list = feed.filter(j => j.status === currentTab);
+
+  if (list.length === 0) {
+    main.innerHTML = currentTab === "new"
+      ? `<div class="empty">Rien à trier pour l'instant.<br>Reviens quand le script quotidien aura trouvé du nouveau.</div>`
+      : `<div class="empty">Aucune offre sauvegardée.</div>`;
+    return;
+  }
+
+  list.sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""));
+
+  main.innerHTML = list.map(job => `
+    <div class="card">
+      <div class="company">${escapeHtml(job.company)}</div>
+      <h2>${escapeHtml(job.title)}</h2>
+      <div class="meta">Vu le ${job.first_seen || "?"}</div>
+      <a class="open-link" href="${job.url}" target="_blank" rel="noopener">Voir l'offre →</a>
+      <div class="actions">
+        ${currentTab === "new" ? `
+          <button class="save-btn" data-id="${escapeAttr(job.id)}" data-action="saved">✓ Sauvegarder</button>
+          <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
+        ` : `
+          <button class="unsave-btn" data-id="${escapeAttr(job.id)}" data-action="new">↺ Remettre à trier</button>
+          <button class="delete-btn" data-id="${escapeAttr(job.id)}" data-action="deleted">✕ Supprimer</button>
+        `}
+      </div>
+    </div>
+  `).join("");
+
+  main.querySelectorAll("button[data-action]").forEach(btn => {
+    btn.addEventListener("click", () => setStatus(btn.dataset.id, btn.dataset.action));
+  });
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/"/g, "&quot;");
+}
+
+document.getElementById("tab-new").onclick = () => {
+  currentTab = "new";
+  document.getElementById("tab-new").classList.add("active");
+  document.getElementById("tab-saved").classList.remove("active");
+  render();
+};
+document.getElementById("tab-saved").onclick = () => {
+  currentTab = "saved";
+  document.getElementById("tab-saved").classList.add("active");
+  document.getElementById("tab-new").classList.remove("active");
+  render();
+};
+document.getElementById("gear-btn").onclick = () => renderSettings();
+
+loadFeed();
+
+if ("serviceWorker" in navigator) {
+  // Pas de service worker complexe : on veut toujours les données fraîches.
+  navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+}
+</script>
+</body>
+</html>
