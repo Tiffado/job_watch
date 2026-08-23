@@ -1,1 +1,138 @@
-[]
+[
+  {
+    "id": "https://jobs.ashbyhq.com/alan/118f5ad8-5db5-48ec-940e-1a880b148f25",
+    "company": "Alan",
+    "title": "Data Full Stack",
+    "url": "https://jobs.ashbyhq.com/alan/118f5ad8-5db5-48ec-940e-1a880b148f25",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/alan/77e5ab0e-b939-4179-9461-e2e4b5ac9cbb",
+    "company": "Alan",
+    "title": "Senior Platform Engineer (x/f/m) - Data Retention & Privacy",
+    "url": "https://jobs.ashbyhq.com/alan/77e5ab0e-b939-4179-9461-e2e4b5ac9cbb",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/backmarket/e9f21f66-04b4-484c-8006-15ef920bac66",
+    "company": "Back Market",
+    "title": "Senior Data Scientist - Care AI ",
+    "url": "https://jobs.ashbyhq.com/backmarket/e9f21f66-04b4-484c-8006-15ef920bac66",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/backmarket/9eae3809-5941-40d1-bc5a-9f1871618191",
+    "company": "Back Market",
+    "title": "Senior Data Scientist - Pricing",
+    "url": "https://jobs.ashbyhq.com/backmarket/9eae3809-5941-40d1-bc5a-9f1871618191",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/backmarket/fe6813e8-2acf-45d3-949c-9a297a8fa9af",
+    "company": "Back Market",
+    "title": "Senior Data Analyst - Strategy & Commercial ",
+    "url": "https://jobs.ashbyhq.com/backmarket/fe6813e8-2acf-45d3-949c-9a297a8fa9af",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/backmarket/ada77c68-c08a-424f-8876-86445a8f2fa5",
+    "company": "Back Market",
+    "title": "Senior/Expert Data Analyst - Care ",
+    "url": "https://jobs.ashbyhq.com/backmarket/ada77c68-c08a-424f-8876-86445a8f2fa5",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/contentsquare/0fe32c4c-0fbd-434f-a42e-586794cf91a6",
+    "company": "Contentsquare",
+    "title": "Senior Manager, Product Data Analyst",
+    "url": "https://jobs.lever.co/contentsquare/0fe32c4c-0fbd-434f-a42e-586794cf91a6",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/contentsquare/2fefa8b2-e0f4-43c0-bc5e-15b0e1ef35c7",
+    "company": "Contentsquare",
+    "title": "Senior Manager, Product Data Analyst",
+    "url": "https://jobs.lever.co/contentsquare/2fefa8b2-e0f4-43c0-bc5e-15b0e1ef35c7",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/qonto/f84c6c54-b8da-4651-afc5-6b77a4fe34e8",
+    "company": "Qonto",
+    "title": "Senior Analytics Engineer – Data Governance",
+    "url": "https://jobs.lever.co/qonto/f84c6c54-b8da-4651-afc5-6b77a4fe34e8",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/qonto/1591d10c-c025-42ef-ab54-f9e1a3a93fa2",
+    "company": "Qonto",
+    "title": "Staff Compliance Data Analyst",
+    "url": "https://jobs.lever.co/qonto/1591d10c-c025-42ef-ab54-f9e1a3a93fa2",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/pigment/0aede960-d9cd-45c1-92e4-82e3cb3b2ae2",
+    "company": "Pigment",
+    "title": "Data Engineer (Growth Team)",
+    "url": "https://jobs.lever.co/pigment/0aede960-d9cd-45c1-92e4-82e3cb3b2ae2",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/pigment/7e376574-6715-4226-99a8-c72d64d8a305",
+    "company": "Pigment",
+    "title": "Engineering Data Analyst",
+    "url": "https://jobs.lever.co/pigment/7e376574-6715-4226-99a8-c72d64d8a305",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://job-boards.greenhouse.io/mirakllabs/jobs/6129776004",
+    "company": "Mirakl Labs",
+    "title": "VP DATA",
+    "url": "https://job-boards.greenhouse.io/mirakllabs/jobs/6129776004",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://job-boards.greenhouse.io/mirakllabs/jobs/6102819004",
+    "company": "Mirakl Labs",
+    "title": "VP DATA",
+    "url": "https://job-boards.greenhouse.io/mirakllabs/jobs/6102819004",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://careers.manomano.jobs/en-GB/jobs/8116589-data-engineer-m-w",
+    "company": "ManoMano",
+    "title": "Data Engineer - M/W",
+    "url": "https://careers.manomano.jobs/en-GB/jobs/8116589-data-engineer-m-w",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://www.shift-technology.com/careers",
+    "company": "Shift Technology",
+    "title": "mot-clé data détecté sur la page (à vérifier manuellement)",
+    "url": "https://www.shift-technology.com/careers",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  },
+  {
+    "id": "https://careers.payfit.com/",
+    "company": "PayFit",
+    "title": "mot-clé data détecté sur la page (à vérifier manuellement)",
+    "url": "https://careers.payfit.com/",
+    "first_seen": "2026-08-23",
+    "status": "new"
+  }
+]
