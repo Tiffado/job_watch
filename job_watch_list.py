@@ -12,9 +12,11 @@ Usage :
 
 import json
 import sys
+import re
 from pathlib import Path
 
 import requests
+from bs4 import BeautifulSoup
 
 HERE = Path(__file__).parent
 COMPANIES_FILE = HERE / "companies.json"
@@ -41,6 +43,37 @@ def fetch_lever(token: str):
     return [{"title": j["text"], "url": j["hostedUrl"]} for j in data]
 
 
+def fetch_lever_html(token: str):
+    """
+    Repli pour les sociétés qui exposent leur page Lever publique
+    (jobs.lever.co/TOKEN) mais bloquent l'API JSON (ex: Pennylane, 404
+    sur l'API alors que la page HTML fonctionne). Parse le HTML de la
+    page hébergée directement.
+    """
+    url = f"https://jobs.lever.co/{token}"
+    resp = requests.get(
+        url,
+        timeout=20,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+    )
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.text, "html.parser")
+    jobs = []
+    for a in soup.select("a.posting-title"):
+        title_el = a.select_one("h5")
+        title = title_el.get_text(strip=True) if title_el else a.get_text(strip=True)
+        href = a.get("href", url)
+        jobs.append({"title": title, "url": href})
+    return jobs
+
+
 def fetch_ashby(token: str):
     url = f"https://api.ashbyhq.com/posting-api/job-board/{token}"
     resp = requests.get(url, timeout=20)
@@ -52,13 +85,54 @@ def fetch_ashby(token: str):
     ]
 
 
-def fetch_generic(url: str):
+def fetch_teamtailor_html(url: str):
+    """
+    Sites Teamtailor (ex: ManoMano) : la page /jobs liste les offres en
+    HTML statique, pas besoin de JS. On cherche les liens dont l'URL
+    contient '/jobs/<id>-<slug>'.
+    """
+    resp = requests.get(
+        url,
+        timeout=20,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+    )
+    resp.raise_for_status()
+    soup = BeautifulSoup(resp.text, "html.parser")
+    jobs = []
+    seen_urls = set()
+    for a in soup.find_all("a", href=True):
+        href = a["href"]
+        if re.search(r"/jobs/\d+-", href):
+            title = a.get_text(strip=True)
+            if title and href not in seen_urls:
+                full_url = href if href.startswith("http") else f"https://careers.manomano.jobs{href}"
+                jobs.append({"title": title, "url": full_url})
+                seen_urls.add(href)
+    return jobs
     """
     Repli générique : signale juste la présence du mot-clé sur la page,
     sans lien précis vers l'offre. À remplacer par greenhouse/lever/ashby
     dès que la vraie plateforme est identifiée (voir README.md).
     """
-    resp = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+    resp = requests.get(
+        url,
+        timeout=20,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+        },
+    )
     resp.raise_for_status()
     html = resp.text.lower()
     if any(k in html for k in KEYWORDS):
@@ -72,6 +146,10 @@ def fetch_jobs(company: dict):
             return fetch_greenhouse(company["token"])
         if company["type"] == "lever":
             return fetch_lever(company["token"])
+        if company["type"] == "lever_html":
+            return fetch_lever_html(company["token"])
+        if company["type"] == "teamtailor_html":
+            return fetch_teamtailor_html(company["url"])
         if company["type"] == "ashby":
             return fetch_ashby(company["token"])
         return fetch_generic(company["url"])
