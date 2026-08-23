@@ -41,13 +41,13 @@
   },
   {
     "name": "Pennylane",
-    "type": "lever",
+    "type": "lever_html",
     "token": "pennylane"
   },
   {
     "name": "ManoMano",
-    "type": "generic",
-    "url": "https://www.manomano.fr/recrutement"
+    "type": "teamtailor_html",
+    "url": "https://careers.manomano.jobs/jobs"
   },
   {
     "name": "Shift Technology",
