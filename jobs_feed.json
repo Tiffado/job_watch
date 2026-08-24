@@ -14,7 +14,7 @@
     "title": "Senior Platform Engineer (x/f/m) - Data Retention & Privacy",
     "url": "https://jobs.ashbyhq.com/alan/77e5ab0e-b939-4179-9461-e2e4b5ac9cbb",
     "first_seen": "2026-08-23",
-    "status": "new",
+    "status": "deleted",
     "analysis": "**Match global : faible**\n\nPoints de correspondance : expérience senior en manipulation de données sensibles/production (secteur bancaire), Python, gestion d'environnements de données à grande échelle, sensibilité aux enjeux de qualité/gouvernance des données.\n\nÉcarts principaux : le poste est un rôle de **backend/platform engineering produit** (Python/Flask/React, monorepo, ownership de service en production, on-call), très éloigné du profil data engineering Big Data/PySpark orienté pipelines analytiques et BI ; aucune expérience en développement de plateformes internes, GDPR/privacy by design, ni en environnement startup tech (vs ESN/banque) ; niveau attendu \"staff/au-dessus du E band\" avec forte autonomie produit et influence cross-équipes, profil différent de l'expertise technique actuelle."
   },
   {
