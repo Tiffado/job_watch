@@ -50,7 +50,8 @@
     "title": "Senior/Expert Data Analyst - Care ",
     "url": "https://jobs.ashbyhq.com/backmarket/ada77c68-c08a-424f-8876-86445a8f2fa5",
     "first_seen": "2026-08-23",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : faible**\n\n- Points communs : SQL avancé, formation BigQuery, culture Agile/Scrum, expérience \"grands volumes de données\".\n- Écarts majeurs : ce poste est un rôle d'**analyste métier/business analytics** (mesure de satisfaction client, storytelling auprès de la direction, A/B testing, causal reasoning) et non un poste d'ingénierie data — profil très orienté pipelines/ETL/Big Data infra, sans expérience visible en analytics métier, dbt, ou outils Care (Zendesk/Intercom).\n- Stack technique différente (BigQuery/dbt/Omni/Amplitude vs Hadoop/Talend/PySpark), et positionnement attendu très \"business-facing\" plutôt que \"technique pur\"."
   },
   {
     "id": "https://jobs.lever.co/contentsquare/0fe32c4c-0fbd-434f-a42e-586794cf91a6",
