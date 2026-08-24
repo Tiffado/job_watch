@@ -68,7 +68,8 @@
     "title": "Senior Manager, Product Data Analyst",
     "url": "https://jobs.lever.co/contentsquare/2fefa8b2-e0f4-43c0-bc5e-15b0e1ef35c7",
     "first_seen": "2026-08-23",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : faible**\n\nPoints de correspondance : bases SQL/données solides, culture data-driven, et l'intérêt affiché pour l'analytics/data science côté ouverture de profil.\n\nÉcarts principaux : ce poste est un rôle de management (encadrement de 3 analystes, relation avec des VP produit), orienté product analytics/business (statistiques, dataviz, Tableau/DBT) — un profil très éloigné du data engineering technique (PySpark/Hadoop/Talend). Pas d'expérience managériale ni de data analysis produit mentionnée dans le CV, et poste basé à Barcelone (hybride)."
   },
   {
     "id": "https://jobs.lever.co/qonto/f84c6c54-b8da-4651-afc5-6b77a4fe34e8",
