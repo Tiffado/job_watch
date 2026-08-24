@@ -95,7 +95,7 @@
     "title": "Data Engineer (Growth Team)",
     "url": "https://jobs.lever.co/pigment/0aede960-d9cd-45c1-92e4-82e3cb3b2ae2",
     "first_seen": "2026-08-23",
-    "status": "new",
+    "status": "deleted",
     "analysis": "**Match global : faible.**\n\nPoints de correspondance : maîtrise Python/SQL, base BigQuery (formation), et expérience de modélisation de données transformant des données brutes en datasets exploitables.\n\nÉcarts principaux : poste orienté produit web (FastAPI/React), GenAI/LLM et écosystème GCP/Terraform/dbt, très éloigné du cœur Hadoop/PySpark/Talend bancaire ; contexte startup Growth/GTM sans lien avec ton expérience secteur bancaire ; profil recherché plus junior (2+ ans) et davantage \"full-stack data/produit\" que data engineering pur."
   },
   {
