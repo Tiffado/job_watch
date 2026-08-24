@@ -86,7 +86,7 @@
     "title": "Staff Compliance Data Analyst",
     "url": "https://jobs.lever.co/qonto/1591d10c-c025-42ef-ab54-f9e1a3a93fa2",
     "first_seen": "2026-08-23",
-    "status": "new",
+    "status": "deleted",
     "analysis": "**Match global : faible**\n\n**Points de correspondance :** solide bagage SQL/modélisation de données et environnement bancaire (sensibilité compliance/KYC potentiellement transposable) ; expérience de pipelines de données bout-en-bout ; anglais courant.\n\n**Écarts principaux :** poste orienté Data Analyst (dbt, Omni, dashboards self-service, storytelling métier) plutôt que Data Engineer (PySpark/Hadoop/Talend) ; pas d'expérience compliance/KYC/AML ni de dbt ; rôle \"Staff\" attendant une forte autonomie côté analytics/stakeholder management, ce qui diffère du profil technique/infra actuel."
   },
   {
