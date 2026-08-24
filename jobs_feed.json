@@ -41,7 +41,7 @@
     "title": "Senior Data Analyst - Strategy & Commercial ",
     "url": "https://jobs.ashbyhq.com/backmarket/fe6813e8-2acf-45d3-949c-9a297a8fa9af",
     "first_seen": "2026-08-23",
-    "status": "new",
+    "status": "deleted",
     "analysis": "**Match global : faible**\n\nPoints de correspondance : SQL solide, expérience data (grands volumes), notion BigQuery (formation complémentaire), goût affirmé pour l'analytics.\n\nÉcarts principaux : ce poste est un rôle d'**analyste data business** (storytelling, pricing, mesure causale, A/B testing, interaction directe avec le leadership) et non d'ingénierie de pipelines — profil très orienté data engineering (PySpark, Talend, Hadoop) sans expérience démontrée en analytics métier, forecasting, ou expérimentation. Pas de pratique dbt/Amplitude/Zendesk ni de track record de \"business impact\" analytique."
   },
   {
