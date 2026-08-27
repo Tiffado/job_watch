@@ -77,7 +77,7 @@
     "title": "Senior Analytics Engineer – Data Governance",
     "url": "https://jobs.lever.co/qonto/f84c6c54-b8da-4651-afc5-6b77a4fe34e8",
     "first_seen": "2026-08-23",
-    "status": "new",
+    "status": "expired",
     "analysis": "**Match global : moyen**\n\n**Points de correspondance :**\n- Solide expérience secteur bancaire/compliance et culture de la rigueur data (modélisation, qualité, ordonnancement)\n- SQL avancé et modélisation dimensionnelle transférables vers dbt\n- Habitude du travail en environnement réglementé et gestion de parcs de pipelines\n\n**Écarts principaux :**\n- Pas d'expérience dbt (stack cœur du poste), ni de rôle \"Analytics Engineer\" pur\n- Poste orienté gouvernance/qualité de données et pilotage stakeholders (peu d'ingénierie pure), plus proche d'un rôle transverse que du profil Data Engineering actuel\n- Positionnement \"Senior\" mais avec forte composante gestion/animation (rituels, remédiation) plutôt que développement technique"
   },
   {
