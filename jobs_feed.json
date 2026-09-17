@@ -193,5 +193,13 @@
     "first_seen": "2026-09-16",
     "status": "new",
     "analysis": "**Match global : moyen**\n\n- Points forts : solide expérience Python/PySpark et SQL, expérience Snowflake (formation) qui colle à leur stack, et habitude du travail sur infrastructure/pipelines de données en production.\n- Écarts principaux : peu/pas d'expérience avérée sur Airflow, Terraform, dbt, AWS/GCP ni Infrastructure as Code, outils centraux du poste ; profil très orienté écosystème Hadoop/banque on-premise vs environnement cloud-native attendu ici. L'anglais courant est un plus, mais le virage technique (orchestration moderne, IaC) demande un effort d'adaptation notable."
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/pennylane/88b4a6e4-85cd-4179-ad4e-5ca2445adc18",
+    "company": "Pennylane",
+    "title": "Senior Data Engineer - Analytics",
+    "url": "https://jobs.ashbyhq.com/pennylane/88b4a6e4-85cd-4179-ad4e-5ca2445adc18",
+    "first_seen": "2026-09-17",
+    "status": "new"
   }
 ]
