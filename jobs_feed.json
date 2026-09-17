@@ -200,6 +200,7 @@
     "title": "Senior Data Engineer - Analytics",
     "url": "https://jobs.ashbyhq.com/pennylane/88b4a6e4-85cd-4179-ad4e-5ca2445adc18",
     "first_seen": "2026-09-17",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : moyen**\n\nPoints de correspondance : solide expérience data engineering (ETL, pipelines, modélisation dimensionnelle, PySpark), niveau senior recherché, bon niveau d'anglais requis (vous avez C2).\n\nÉcarts principaux : stack cible orientée moderne (data lake, architecture medallion, outils de gouvernance/catalogue de données) sans mention explicite d'Hadoop/Talend ; contexte fintech/startup vs profil très marqué secteur bancaire traditionnel ; pas de mention d'expérience Snowflake/BigQuery en production (seulement formations complémentaires), alors que ces environnements cloud modernes semblent centraux ici."
   }
 ]
