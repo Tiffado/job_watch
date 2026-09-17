@@ -15,6 +15,11 @@
     "token": "backmarket"
   },
   {
+    "name": "Pennylane",
+    "type": "ashby",
+    "token": "pennylane"
+  },
+  {
     "name": "Contentsquare",
     "type": "lever",
     "token": "contentsquare"
