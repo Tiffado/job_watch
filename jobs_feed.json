@@ -191,7 +191,7 @@
     "title": "Data Engineer",
     "url": "https://jobs.ashbyhq.com/alan/ff5b0060-3d47-4d4d-bbed-baef57e1a0d3",
     "first_seen": "2026-09-16",
-    "status": "saved",
+    "status": "deleted",
     "analysis": "**Match global : moyen**\n\n- Points forts : solide expérience Python/PySpark et SQL, expérience Snowflake (formation) qui colle à leur stack, et habitude du travail sur infrastructure/pipelines de données en production.\n- Écarts principaux : peu/pas d'expérience avérée sur Airflow, Terraform, dbt, AWS/GCP ni Infrastructure as Code, outils centraux du poste ; profil très orienté écosystème Hadoop/banque on-premise vs environnement cloud-native attendu ici. L'anglais courant est un plus, mais le virage technique (orchestration moderne, IaC) demande un effort d'adaptation notable."
   },
   {
