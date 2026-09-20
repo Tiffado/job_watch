@@ -209,6 +209,7 @@
     "title": "Data Platform Engineer",
     "url": "https://jobs.lever.co/qonto/a6014712-8e9e-4f6d-868e-0bc6bfa298cc",
     "first_seen": "2026-09-19",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : moyen**\n\n**Points de correspondance :** solide expérience Python/data engineering en production, pipelines de données à grande échelle, CI/CD et Git, exposition préalable à Snowflake (formation + projet de migration en cours), anglais courant.\n\n**Écarts principaux :** absence d'expérience pratique sur Airflow, Trino, Kubernetes, AWS et OpenMetadata (stack cloud-native moderne vs environnement Hadoop/Talend on-premise du profil) ; le poste attend une posture \"product owner technique\" en autonomie forte et un rôle d'interface directe avec les consommateurs de données, à valider par rapport à l'expérience plus orientée développement/exploitation du candidat."
   }
 ]
