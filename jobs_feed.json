@@ -209,7 +209,7 @@
     "title": "Data Platform Engineer",
     "url": "https://jobs.lever.co/qonto/a6014712-8e9e-4f6d-868e-0bc6bfa298cc",
     "first_seen": "2026-09-19",
-    "status": "new",
+    "status": "expired",
     "analysis": "**Match global : moyen**\n\n**Points de correspondance :** solide expérience Python/data engineering en production, pipelines de données à grande échelle, CI/CD et Git, exposition préalable à Snowflake (formation + projet de migration en cours), anglais courant.\n\n**Écarts principaux :** absence d'expérience pratique sur Airflow, Trino, Kubernetes, AWS et OpenMetadata (stack cloud-native moderne vs environnement Hadoop/Talend on-premise du profil) ; le poste attend une posture \"product owner technique\" en autonomie forte et un rôle d'interface directe avec les consommateurs de données, à valider par rapport à l'expérience plus orientée développement/exploitation du candidat."
   },
   {
@@ -218,6 +218,14 @@
     "title": "Finance Data Analyst",
     "url": "https://jobs.lever.co/contentsquare/f1a35c56-bb67-44a5-ab95-4e707be2afc2",
     "first_seen": "2026-09-21",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/backmarket/1fcf3fa6-7e34-4729-a687-d981856bf887",
+    "company": "Back Market",
+    "title": "Customer Care Data Analyst Intern",
+    "url": "https://jobs.ashbyhq.com/backmarket/1fcf3fa6-7e34-4729-a687-d981856bf887",
+    "first_seen": "2026-09-23",
     "status": "new"
   }
 ]
