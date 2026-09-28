@@ -228,5 +228,21 @@
     "first_seen": "2026-09-23",
     "status": "deleted",
     "analysis": "Match global : **faible**.\n\nPoints de correspondance : maîtrise SQL et modélisation de données, appétence affichée pour l'analytics/data science, anglais courant (C2).\n\nÉcarts principaux : il s'agit d'un stage (6 mois, destiné à un étudiant en cours de cursus universitaire avec convention de stage), incompatible avec un profil d'ingénieur senior avec ~10 ans d'expérience ; l'outillage (Tableau, Gsheet, DBT) et le niveau de séniorité visé ne correspondent pas non plus à votre expertise Big Data/PySpark/Talend en environnement bancaire."
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/alan/727111d2-85bf-4e93-bbce-7eb13d815252",
+    "company": "Alan",
+    "title": "Data Engineer",
+    "url": "https://jobs.ashbyhq.com/alan/727111d2-85bf-4e93-bbce-7eb13d815252",
+    "first_seen": "2026-09-28",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/pennylane/2dc040dc-750f-4fc0-bda5-f662aaa4b2be",
+    "company": "Pennylane",
+    "title": "HRIS Workday & Data, Team Lead",
+    "url": "https://jobs.ashbyhq.com/pennylane/2dc040dc-750f-4fc0-bda5-f662aaa4b2be",
+    "first_seen": "2026-09-28",
+    "status": "new"
   }
 ]
