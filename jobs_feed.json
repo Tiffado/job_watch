@@ -206,5 +206,21 @@
     "url": "https://jobs.ashbyhq.com/backmarket/1fcf3fa6-7e34-4729-a687-d981856bf887",
     "first_seen": "2026-09-23",
     "status": "deleted"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/alan/727111d2-85bf-4e93-bbce-7eb13d815252",
+    "company": "Alan",
+    "title": "Data Engineer",
+    "url": "https://jobs.ashbyhq.com/alan/727111d2-85bf-4e93-bbce-7eb13d815252",
+    "first_seen": "2026-09-28",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/pennylane/2dc040dc-750f-4fc0-bda5-f662aaa4b2be",
+    "company": "Pennylane",
+    "title": "HRIS Workday & Data, Team Lead",
+    "url": "https://jobs.ashbyhq.com/pennylane/2dc040dc-750f-4fc0-bda5-f662aaa4b2be",
+    "first_seen": "2026-09-28",
+    "status": "new"
   }
 ]
