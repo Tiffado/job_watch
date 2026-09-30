@@ -235,7 +235,8 @@
     "title": "Data Engineer",
     "url": "https://jobs.ashbyhq.com/alan/727111d2-85bf-4e93-bbce-7eb13d815252",
     "first_seen": "2026-09-28",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : moyen**\n\nPoints de correspondance : solide expérience Python/SQL et pipelines de données en production, formation Snowflake déjà acquise (outil central chez Alan), anglais C2 correspondant à l'exigence \"fluent English\".\n\nÉcarts principaux : pas d'expérience mentionnée sur Airflow, Terraform, dbt, AWS/GCP ni Metabase (stack cœur du poste), profil issu d'un environnement bancaire/Hadoop-Talend plutôt que cloud-native moderne ; le poste vise aussi de la conception d'outils/librairies pour d'autres ingénieurs, ce qui diffère du positionnement plus \"exécution de pipelines\" du CV."
   },
   {
     "id": "https://jobs.ashbyhq.com/pennylane/2dc040dc-750f-4fc0-bda5-f662aaa4b2be",
