@@ -263,5 +263,13 @@
     "first_seen": "2026-09-30",
     "status": "deleted",
     "analysis": "**Match global : faible**\n\nCette offre est un **stage** (Business Analyst Intern, 6 mois) destiné à un étudiant en Master, alors que le profil correspond à un ingénieur data senior avec ~10 ans d'expérience.\n\n- Points de correspondance : SQL, manipulation/modélisation de données, sensibilité analytics déjà mentionnée dans les \"ouvertures\" du profil.\n- Écarts majeurs : niveau (stage étudiant vs senior), statut (nécessite une convention de stage d'école française), outils différents (Tableau, Google Sheets vs stack Big Data/Hadoop/PySpark), et absence totale d'adéquation salariale/statutaire avec un profil freelance senior."
+  },
+  {
+    "id": "https://jobs.lever.co/qonto/0b9c49fe-e8d6-4d28-b854-fbdd6b7252af",
+    "company": "Qonto",
+    "title": "Senior Marketing Data Analyst",
+    "url": "https://jobs.lever.co/qonto/0b9c49fe-e8d6-4d28-b854-fbdd6b7252af",
+    "first_seen": "2026-10-01",
+    "status": "new"
   }
 ]
