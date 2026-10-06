@@ -295,6 +295,7 @@
     "title": "Data Scientist - Intern ",
     "url": "https://job-boards.greenhouse.io/mirakllabs/jobs/6210559004",
     "first_seen": "2026-10-06",
-    "status": "new"
+    "status": "new",
+    "analysis": "**Match global : faible**\n\n- Points de correspondance : maîtrise de Python/SQL et manipulation de données à grande échelle (Spark), compréhension des environnements cloud et des pipelines data.\n- Écarts majeurs : il s'agit d'un **stage** (Data Scientist Intern, Bac+5 en cours), incompatible avec votre profil d'ingénieur senior expérimenté ; le poste cible des compétences data science/ML (statistiques, deep learning, prototypage d'algorithmes avec TensorFlow/PyTorch) que votre CV n'illustre pas, orienté data engineering/ETL plutôt que data science.\n- Ce poste n'est donc pas pertinent pour votre niveau d'expérience et votre spécialisation actuelle."
   }
 ]
