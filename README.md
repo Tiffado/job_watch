@@ -89,7 +89,7 @@ de ton téléphone (localStorage), jamais transmis ailleurs qu'à GitHub.
 Comme précédemment :
 1. Installe l'appli **ntfy** sur Android (Play Store, gratuite).
 2. Abonne-toi à un topic unique et difficile à deviner (ex.
-   `lionel-jw-8f2k1q`).
+   `jobwatch-7q4x9z2m`).
 3. Dans ton repo GitHub → Settings → Secrets and variables → Actions →
    New repository secret : nom `NTFY_TOPIC`, valeur = ton topic.
 
