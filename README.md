@@ -1,5 +1,12 @@
 # Job Watch — veille + appli mobile, 100% gratuit
 
+> **Projet personnel**, public uniquement pour héberger sa web app avec GitHub Pages
+> ([tiffado.github.io/job_watch](https://tiffado.github.io/job_watch/)). C'est un outil de veille
+> pour mon propre usage, pas un projet vitrine.
+>
+> Mon projet vitrine en data engineering : **[vlille-data-pipeline](https://github.com/Tiffado/vlille-data-pipeline)**
+> (GCS, BigQuery, dbt, Airflow, Kafka).
+
 ## Vue d'ensemble
 
 - **GitHub Actions** exécute `job_watch.py` tous les jours dans le cloud.
