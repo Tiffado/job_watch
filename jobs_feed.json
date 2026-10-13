@@ -253,7 +253,8 @@
     "title": "Senior Data Analyst - Acquisition 🇫🇷",
     "url": "https://jobs.ashbyhq.com/pennylane/a26bbade-e859-4fa9-8f6b-b6f19bb1747e",
     "first_seen": "2026-09-29",
-    "status": "new"
+    "status": "new",
+    "analysis": "Je n'ai pu récupérer que le titre du poste (\"Senior Data Analyst - Acquisition\" chez Pennylane), le contenu détaillé étant chargé en JavaScript et inaccessible.\n\n**Match global : faible à moyen** (évaluation partielle, basée sur l'intitulé seul)\n\n- Correspondance : expérience data solide (SQL, modélisation, Big Data) transférable vers un poste d'analyste ; appétence déclarée pour les aspects analytics/data science.\n- Écart principal : le poste semble orienté \"Data Analyst\" côté acquisition/marketing (analyses business, growth), un axe différent du profil actuel très engineering/pipeline (PySpark, Talend, production bancaire), avec peu d'expérience visible en analytics métier ou outils de dataviz (BI, SQL analytique orienté growth).\n- Recommandation : vérifier le détail de la fiche (stack, missions exactes) avant de juger, l'intitulé seul ne suffit pas à conclure fermement."
   },
   {
     "id": "https://jobs.ashbyhq.com/backmarket/8feb95fc-6c41-4b1b-adc1-4d090da2809d",
