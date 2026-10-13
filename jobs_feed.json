@@ -304,7 +304,7 @@
     "title": "Director of rewards, data & analytics",
     "url": "https://jobs.ashbyhq.com/backmarket/edd8c078-87c3-4494-a60c-2a200b2cd68d",
     "first_seen": "2026-10-12",
-    "status": "new",
+    "status": "deleted",
     "analysis": "**Match global : faible**\n\nCe poste de \"Director of Rewards & Data\" est un rôle RH stratégique (Total Rewards, Comp & Ben, equity/BSPCE, workforce planning), pas un poste de data engineering technique. Le seul point commun est le mot \"data\", mais ici il s'agit de pilotage RH/finance, pas de pipelines, Big Data ou PySpark. Aucune des compétences techniques du profil (PySpark, Hadoop, Talend, SQL) n'est pertinente. Écart majeur : il s'agit d'un poste de direction RH avec expertise en rémunération/équité, totalement hors du champ data engineering/analytics visé."
   }
 ]
