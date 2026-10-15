@@ -278,5 +278,21 @@
     "url": "https://jobs.ashbyhq.com/backmarket/edd8c078-87c3-4494-a60c-2a200b2cd68d",
     "first_seen": "2026-10-12",
     "status": "deleted"
+  },
+  {
+    "id": "https://jobs.lever.co/qonto/af1cfae3-4584-401c-966f-4a0bd97ba46c",
+    "company": "Qonto",
+    "title": "People Data Analyst",
+    "url": "https://jobs.lever.co/qonto/af1cfae3-4584-401c-966f-4a0bd97ba46c",
+    "first_seen": "2026-10-15",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/pigment/80b6b73c-eccf-4844-b3fd-31e6f8765249",
+    "company": "Pigment",
+    "title": "Junior Data & Automation Engineer",
+    "url": "https://jobs.lever.co/pigment/80b6b73c-eccf-4844-b3fd-31e6f8765249",
+    "first_seen": "2026-10-15",
+    "status": "new"
   }
 ]
