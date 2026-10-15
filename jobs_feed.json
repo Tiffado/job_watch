@@ -308,5 +308,21 @@
     "first_seen": "2026-10-12",
     "status": "deleted",
     "analysis": "**Match global : faible**\n\nCe poste de \"Director of Rewards & Data\" est un rôle RH stratégique (Total Rewards, Comp & Ben, equity/BSPCE, workforce planning), pas un poste de data engineering technique. Le seul point commun est le mot \"data\", mais ici il s'agit de pilotage RH/finance, pas de pipelines, Big Data ou PySpark. Aucune des compétences techniques du profil (PySpark, Hadoop, Talend, SQL) n'est pertinente. Écart majeur : il s'agit d'un poste de direction RH avec expertise en rémunération/équité, totalement hors du champ data engineering/analytics visé."
+  },
+  {
+    "id": "https://jobs.lever.co/qonto/af1cfae3-4584-401c-966f-4a0bd97ba46c",
+    "company": "Qonto",
+    "title": "People Data Analyst",
+    "url": "https://jobs.lever.co/qonto/af1cfae3-4584-401c-966f-4a0bd97ba46c",
+    "first_seen": "2026-10-15",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.lever.co/pigment/80b6b73c-eccf-4844-b3fd-31e6f8765249",
+    "company": "Pigment",
+    "title": "Junior Data & Automation Engineer",
+    "url": "https://jobs.lever.co/pigment/80b6b73c-eccf-4844-b3fd-31e6f8765249",
+    "first_seen": "2026-10-15",
+    "status": "new"
   }
 ]
