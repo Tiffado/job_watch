@@ -326,5 +326,13 @@
     "first_seen": "2026-10-15",
     "status": "expired",
     "analysis": "**Match global : faible**\n\nPoints de correspondance : solides bases SQL/modélisation dimensionnelle, Python/PySpark, Git/CI/CD, et sensibilité aux environnements cloud data (BigQuery via formation).\n\nÉcarts principaux : poste \"Junior\" (0-3 ans d'XP) clairement en inadéquation avec vos ~10 ans d'expérience ; stack cible différente (GCP, dbt, Airflow, Fivetran, Terraform vs Hadoop/Talend/Control-M) ; absence d'expérience LLM/AI pipelines explicite sur le CV. Ce poste est positionné trop junior pour votre profil senior."
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/alan/e192cc09-3ace-4322-9d62-4441dd4837f1",
+    "company": "Alan",
+    "title": "Data Full Stack",
+    "url": "https://jobs.ashbyhq.com/alan/e192cc09-3ace-4322-9d62-4441dd4837f1",
+    "first_seen": "2026-10-20",
+    "status": "new"
   }
 ]
