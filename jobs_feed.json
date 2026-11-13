@@ -390,5 +390,13 @@
     "url": "https://job-boards.greenhouse.io/mirakl/jobs/6220219004",
     "first_seen": "2026-11-12",
     "status": "new"
+  },
+  {
+    "id": "https://job-boards.greenhouse.io/mirakllabs/jobs/6261076004",
+    "company": "Mirakl Labs",
+    "title": "Data Engineer",
+    "url": "https://job-boards.greenhouse.io/mirakllabs/jobs/6261076004",
+    "first_seen": "2026-11-13",
+    "status": "new"
   }
 ]
