@@ -92,12 +92,23 @@ python job_watch.py            # met à jour jobs_feed.json, notifie si NTFY_TOP
 python job_watch_list.py       # affiche seulement les offres ouvertes, sans rien écrire
 ```
 
+## Synchronisation entre le script et l'appli
+
+Les deux écrivent `jobs_feed.json` :
+
+- **Le script** ne fait expirer aucune offre d'une société dont la récupération a échoué (API
+  indisponible, délai dépassé) : une panne passagère ne vide plus la liste à trier.
+- **Le workflow** relance la mise à jour à partir de la dernière version du dépôt si son push est
+  refusé parce que l'appli a écrit entre-temps (3 essais). La notification ntfy n'est envoyée
+  qu'une fois le feed poussé, pour ne pas annoncer deux fois les mêmes offres.
+- **L'appli** envoie ses écritures une par une. Si GitHub refuse une écriture parce que le fichier
+  a changé (passage du script, autre appareil), elle relit le fichier, réapplique le changement et
+  réessaie une fois.
+
 ## Limites connues
 
 - Le mode `generic` ne détecte que la présence d'un mot-clé sur la page, sans lien vers une offre.
 - Le filtre porte sur l'intitulé seulement : il ne voit ni le lieu, ni le type de contrat, ni la
   description.
-- Le script et l'appli écrivent tous les deux `jobs_feed.json`. Un tri fait dans l'appli pendant
-  l'exécution du script, ou deux actions très rapprochées dans l'appli, peuvent faire échouer une
-  écriture (voir l'historique des runs et les messages de l'appli).
+- Une offre passée en `expired` ne redevient pas `new` si elle est republiée à la même adresse.
 - Le token GitHub donne un accès en écriture à ce dépôt : il doit rester privé.

@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+# Jamais deux runs en même temps (run programmé + run manuel).
+concurrency:
+  group: job-watch
+  cancel-in-progress: false
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -20,15 +25,35 @@ jobs:
 
       - run: pip install requests beautifulsoup4
 
-      - name: Run job watch
-        env:
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-        run: python job_watch.py
-
-      - name: Save updated feed
+      # L'appli mobile écrit aussi jobs_feed.json. Si elle a commité pendant le
+      # run, le push est refusé : on repart alors de la dernière version du
+      # dépôt et on relance la mise à jour, au plus 3 fois.
+      - name: Update and push feed
         run: |
           git config user.name "job-watch-bot"
           git config user.email "job-watch-bot@users.noreply.github.com"
-          git add jobs_feed.json
-          git diff --quiet --cached || git commit -m "Update jobs feed [skip ci]"
-          git push
+          for attempt in 1 2 3; do
+            git fetch --quiet origin main
+            git reset --quiet --hard origin/main
+            python job_watch.py --no-notify
+            git add jobs_feed.json
+            if git diff --quiet --cached; then
+              echo "Feed inchangé."
+              exit 0
+            fi
+            git commit --quiet -m "Update jobs feed [skip ci]"
+            if git push --quiet origin HEAD:main; then
+              exit 0
+            fi
+            echo "Push refusé (feed modifié entre-temps), essai $attempt sur 3."
+            sleep 10
+          done
+          echo "Échec du push après 3 essais." >&2
+          exit 1
+
+      # Notifie seulement une fois le feed enregistré, pour ne jamais annoncer
+      # deux fois les mêmes offres.
+      - name: Notify new offers
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python job_watch.py --notify-only

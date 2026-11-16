@@ -1,0 +1,3 @@
+# Fichier de passage entre la mise à jour du feed et la notification
+new_entries.json
+__pycache__/

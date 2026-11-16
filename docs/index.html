@@ -394,6 +394,7 @@ function renderSettings() {
 async function githubGetFile() {
   const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/jobs_feed.json?ref=${config.branch}`;
   const res = await fetch(url, {
+    cache: "no-store", // toujours la dernière version, jamais celle du cache navigateur
     headers: {
       Authorization: `Bearer ${config.token}`,
       Accept: "application/vnd.github+json",
@@ -422,7 +423,11 @@ async function githubPutFile(newFeed, sha, message) {
     },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`GitHub PUT ${res.status}`);
+  if (!res.ok) {
+    const err = new Error(`GitHub PUT ${res.status}`);
+    err.status = res.status; // 409 : le fichier a changé depuis sa lecture
+    throw err;
+  }
   return res.json();
 }
 
@@ -437,16 +442,7 @@ async function loadFeed() {
   document.getElementById("sub-status").textContent = "Chargement…";
   try {
     const { json, sha } = await githubGetFile();
-    feed = json;
-    currentSha = sha;
-    // Restaure les analyses déjà sauvegardées, repliées par défaut
-    feed.forEach(j => {
-      if (j.analysis) {
-        analysisCache[j.id] = { status: "done", text: j.analysis, expanded: false };
-      }
-    });
-    document.getElementById("sub-status").textContent =
-      `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)`;
+    useFeed(json, sha);
     render();
   } catch (e) {
     document.getElementById("sub-status").textContent = "Erreur de chargement";
@@ -454,22 +450,67 @@ async function loadFeed() {
   }
 }
 
-async function persistFeed(commitMessage) {
-  const result = await githubPutFile(feed, currentSha, commitMessage);
-  currentSha = result.content.sha;
+// Remplace le feed affiché par une version lue sur GitHub.
+function useFeed(json, sha) {
+  feed = json;
+  currentSha = sha;
+  // Restaure les analyses déjà sauvegardées, repliées par défaut
+  feed.forEach(j => {
+    if (j.analysis && !analysisCache[j.id]) {
+      analysisCache[j.id] = { status: "done", text: j.analysis, expanded: false };
+    }
+  });
+  document.getElementById("sub-status").textContent =
+    `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)`;
+}
+
+// Les écritures passent une par une : deux clics rapprochés ne partent plus
+// avec la même version (sha) du fichier.
+let writeQueue = Promise.resolve();
+
+// Enregistre un changement sur GitHub. `applyChange(feedArray)` applique le
+// changement à un tableau d'offres : au feed local d'abord, puis, si le fichier
+// a changé sur GitHub entre-temps (script quotidien, autre appareil), à la
+// version distante relue, avant un nouvel essai.
+function persistChange(applyChange, commitMessage) {
+  applyChange(feed);
+  const write = async () => {
+    // Le feed a pu être remplacé depuis le clic (relecture après un conflit,
+    // bouton Rafraîchir) : on réapplique le changement à la version courante.
+    applyChange(feed);
+    try {
+      const result = await githubPutFile(feed, currentSha, commitMessage);
+      currentSha = result.content.sha;
+    } catch (e) {
+      if (e.status !== 409) throw e;
+      const { json, sha } = await githubGetFile();
+      applyChange(json);
+      const result = await githubPutFile(json, sha, commitMessage);
+      useFeed(json, result.content.sha);
+      render();
+    }
+  };
+  const done = writeQueue.then(write);
+  writeQueue = done.catch(() => {}); // une écriture en échec ne bloque pas les suivantes
+  return done;
 }
 
 async function setStatus(id, newStatus) {
   const entry = feed.find(j => j.id === id);
   if (!entry) return;
   const prevStatus = entry.status;
-  entry.status = newStatus;
-  render(); // optimistic UI update
+  const setTo = status => list => {
+    const e = list.find(j => j.id === id);
+    if (e) e.status = status;
+  };
+  const write = persistChange(setTo(newStatus), `Update ${entry.title} -> ${newStatus}`);
+  render(); // affichage immédiat, sans attendre GitHub
   try {
-    await persistFeed(`Update ${entry.title} -> ${newStatus}`);
-    toast(newStatus === "saved" ? "Sauvegardée" : newStatus === "deleted" ? "Supprimée" : "Remise à trier");
+    await write;
+    render(); // le feed a pu être relu pendant l'écriture
+    toast(newStatus === "saved" ? "Sauvegardée" : newStatus === "deleted" ? "Supprimée" : newStatus === "applied" ? "Postulé" : "Remise à trier");
   } catch (e) {
-    entry.status = prevStatus; // rollback
+    setTo(prevStatus)(feed); // annule l'affichage
     render();
     toast("Échec de la sauvegarde, réessaie");
   }
@@ -478,9 +519,12 @@ async function setStatus(id, newStatus) {
 async function saveAnalysisToFeed(jobId, text) {
   const entry = feed.find(j => j.id === jobId);
   if (!entry) return;
-  entry.analysis = text;
+  const addAnalysis = list => {
+    const e = list.find(j => j.id === jobId);
+    if (e) e.analysis = text;
+  };
   try {
-    await persistFeed(`Add analysis for ${entry.title}`);
+    await persistChange(addAnalysis, `Add analysis for ${entry.title}`);
   } catch (e) {
     toast("Analyse affichée mais pas sauvegardée (erreur GitHub)");
   }
