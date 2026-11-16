@@ -648,11 +648,16 @@ function matchLevel(job) {
   return found ? MATCH_LEVELS[found[1].toLowerCase()] : null;
 }
 
+// Une pastille est toujours affichée : niveau de match, ou raison de son absence.
 function renderMatchPill(job, match) {
   if (match) return `<span class="match-pill match-${match.key}">${match.label}</span>`;
   const state = analysisCache[job.id];
-  if (state && state.status === "loading") return `<span class="match-pill match-pending">⏳ Analyse…</span>`;
-  return "";
+  const pill = text => `<span class="match-pill match-pending">${text}</span>`;
+  if (state && state.status === "loading") return pill("⏳ Analyse…");
+  if (state && state.status === "error") return pill("⚠ Analyse en échec");
+  if (state && state.status === "done") return pill("? Niveau non lu");
+  if (!config?.claudeApiKey || !config?.cvText) return pill("⚙ Clé API ou CV manquant");
+  return pill("… En attente d'analyse");
 }
 
 function renderAnalyzeButton(job) {
