@@ -39,6 +39,14 @@ FEED_FILE = HERE / "jobs_feed.json"
 
 KEYWORDS = ["data", "données"]
 
+# Contrats étudiants : exclus même si l'intitulé contient un mot-clé data.
+# Mots entiers uniquement, pour ne pas écarter "International" ou "Internal".
+EXCLUDED_PATTERN = re.compile(
+    r"\b(intern|internship|stage|stagiaire|apprenti|apprentie|apprentissage"
+    r"|apprentice|apprenticeship|alternance|alternant|alternante)\b",
+    re.IGNORECASE,
+)
+
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")
 
 BROWSER_HEADERS = {
@@ -128,6 +136,8 @@ def fetch_jobs(company: dict):
 
 def matches_keywords(title: str) -> bool:
     t = title.lower()
+    if EXCLUDED_PATTERN.search(t):
+        return False
     return any(k in t for k in KEYWORDS)
 
 
