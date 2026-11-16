@@ -14,8 +14,9 @@ définie dans companies.json (à côté de ce script).
     - "applied" : candidature envoyée (app mobile)
     - "deleted" : écartée depuis l'app mobile
     - "expired" : n'apparaît plus sur le site, jamais triée entre-temps
-  Seules les offres "new" sont modifiées automatiquement (passage en
-  "expired"), et jamais pour une société dont la récupération a échoué.
+  Seules les offres "new" et "expired" sont modifiées automatiquement
+  ("new" -> "expired" quand l'offre disparaît, "expired" -> "new" quand elle
+  revient), et jamais pour une société dont la récupération a échoué.
 - Envoie une notification push via ntfy.sh pour toute offre nouvellement
   détectée (statut "new").
 
@@ -222,9 +223,13 @@ def update_feed(feed, companies, fetch=fetch_jobs, today=None):
         matching = [j for j in jobs if matches_keywords(j["title"])]
         current_ids = {j["url"] for j in matching}  # l'URL sert d'identifiant unique
 
-        # Ajoute les offres jamais vues
+        # Ajoute les offres jamais vues ; remet à trier une offre expirée qui
+        # est de nouveau en ligne (sans renotifier : elle l'a déjà été).
         for j in matching:
-            if j["url"] not in feed_by_id:
+            existing = feed_by_id.get(j["url"])
+            if existing and existing["status"] == "expired":
+                existing["status"] = "new"
+            elif not existing:
                 entry = {
                     "id": j["url"],
                     "company": name,

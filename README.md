@@ -23,7 +23,7 @@
 | Statut | Signification | Qui le pose |
 |---|---|---|
 | `new` | détectée, pas encore triée | le script |
-| `expired` | n'est plus en ligne alors qu'elle n'était pas triée | le script |
+| `expired` | n'est plus en ligne alors qu'elle n'était pas triée (redevient `new` si elle revient) | le script |
 | `saved` | intéressante | l'appli |
 | `applied` | candidature envoyée | l'appli |
 | `deleted` | écartée | l'appli |
@@ -110,5 +110,4 @@ Les deux écrivent `jobs_feed.json` :
 - Le mode `generic` ne détecte que la présence d'un mot-clé sur la page, sans lien vers une offre.
 - Le filtre porte sur l'intitulé seulement : il ne voit ni le lieu, ni le type de contrat, ni la
   description.
-- Une offre passée en `expired` ne redevient pas `new` si elle est republiée à la même adresse.
 - Le token GitHub donne un accès en écriture à ce dépôt : il doit rester privé.
