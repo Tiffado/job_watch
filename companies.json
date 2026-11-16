@@ -58,5 +58,47 @@
     "name": "PayFit",
     "type": "generic",
     "url": "https://careers.payfit.com/"
+  },
+  {
+    "name": "Decathlon Technology",
+    "type": "greenhouse",
+    "token": "decathlontechnology",
+    "lille_only": true
+  },
+  {
+    "name": "Kiabi",
+    "type": "smartrecruiters",
+    "token": "kiabi",
+    "lille_only": true
+  },
+  {
+    "name": "Boulanger",
+    "type": "smartrecruiters",
+    "token": "boulanger",
+    "lille_only": true
+  },
+  {
+    "name": "Lesaffre",
+    "type": "smartrecruiters",
+    "token": "lesaffre",
+    "lille_only": true
+  },
+  {
+    "name": "Exotec",
+    "type": "workable",
+    "token": "exotec",
+    "lille_only": true
+  },
+  {
+    "name": "Devoteam",
+    "type": "smartrecruiters",
+    "token": "devoteam",
+    "lille_only": true
+  },
+  {
+    "name": "Talan",
+    "type": "smartrecruiters",
+    "token": "talan",
+    "lille_only": true
   }
 ]

@@ -4,6 +4,7 @@ Veille quotidienne des offres "data" chez une liste de sociétés,
 définie dans companies.json (à côté de ce script).
 
 - Interroge l'API publique de chaque société (Greenhouse / Lever / Ashby /
+  SmartRecruiters / Workable /
   Teamtailor) ou une page générique en repli.
 - Filtre les intitulés de poste contenant un mot-clé data, hors stages et
   alternances.
@@ -80,7 +81,10 @@ def fetch_greenhouse(token: str):
     resp = requests.get(url, timeout=20)
     resp.raise_for_status()
     data = resp.json()
-    return [{"title": j["title"], "url": j["absolute_url"]} for j in data.get("jobs", [])]
+    return [
+        {"title": j["title"], "url": j["absolute_url"], "location": j.get("location", {}).get("name", "")}
+        for j in data.get("jobs", [])
+    ]
 
 
 def fetch_lever(token: str):
@@ -88,7 +92,10 @@ def fetch_lever(token: str):
     resp = requests.get(url, timeout=20)
     resp.raise_for_status()
     data = resp.json()
-    return [{"title": j["text"], "url": j["hostedUrl"]} for j in data]
+    return [
+        {"title": j["text"], "url": j["hostedUrl"], "location": j.get("categories", {}).get("location", "")}
+        for j in data
+    ]
 
 
 def fetch_ashby(token: str):
@@ -97,7 +104,39 @@ def fetch_ashby(token: str):
     resp.raise_for_status()
     data = resp.json()
     return [
-        {"title": j["title"], "url": j.get("jobUrl", j.get("applyUrl", ""))}
+        {"title": j["title"], "url": j.get("jobUrl", j.get("applyUrl", "")), "location": j.get("location", "")}
+        for j in data.get("jobs", [])
+    ]
+
+
+def fetch_smartrecruiters(token: str):
+    """API publique SmartRecruiters, paginée par 100 offres."""
+    jobs = []
+    offset = 0
+    while True:
+        url = f"https://api.smartrecruiters.com/v1/companies/{token}/postings?limit=100&offset={offset}"
+        resp = requests.get(url, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+        for p in data.get("content", []):
+            jobs.append({
+                "title": p["name"],
+                "url": f"https://jobs.smartrecruiters.com/{token}/{p['id']}",
+                "location": p.get("location", {}).get("fullLocation", ""),
+            })
+        offset += 100
+        if offset >= data.get("totalFound", 0):
+            return jobs
+
+
+def fetch_workable(token: str):
+    """API publique du widget Workable."""
+    url = f"https://apply.workable.com/api/v1/widget/accounts/{token}"
+    resp = requests.get(url, timeout=20)
+    resp.raise_for_status()
+    data = resp.json()
+    return [
+        {"title": j["title"], "url": j["url"], "location": f"{j.get('city', '')}, {j.get('country', '')}"}
         for j in data.get("jobs", [])
     ]
 
@@ -144,6 +183,10 @@ def fetch_jobs(company: dict):
             return fetch_lever(company["token"])
         if company["type"] == "ashby":
             return fetch_ashby(company["token"])
+        if company["type"] == "smartrecruiters":
+            return fetch_smartrecruiters(company["token"])
+        if company["type"] == "workable":
+            return fetch_workable(company["token"])
         if company["type"] == "teamtailor_html":
             return fetch_teamtailor_html(company["url"])
         return fetch_generic(company["url"])
@@ -157,6 +200,29 @@ def matches_keywords(title: str) -> bool:
     if EXCLUDED_PATTERN.search(t):
         return False
     return any(k in t for k in KEYWORDS)
+
+
+# Communes de la métropole lilloise, et télétravail, pour les sociétés marquées
+# "lille_only" dans companies.json (groupes avec de nombreux sites ailleurs).
+LILLE_AREA = [
+    "lille", "villeneuve-d'ascq", "villeneuve d'ascq", "lesquin", "hem", "marcq", "croix",
+    "roubaix", "tourcoing", "lezennes", "ronchin", "wasquehal", "lambersart", "seclin",
+    "remote", "télétravail", "teletravail",
+]
+
+
+def in_lille_area(location: str) -> bool:
+    words = re.findall(r"[\w'-]+", location.lower())
+    text = " ".join(words)
+    return any(re.search(rf"\b{re.escape(place)}\b", text) for place in LILLE_AREA)
+
+
+def is_relevant(job: dict, company: dict) -> bool:
+    if not matches_keywords(job["title"]):
+        return False
+    if company.get("lille_only"):
+        return in_lille_area(job.get("location", ""))
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -220,7 +286,7 @@ def update_feed(feed, companies, fetch=fetch_jobs, today=None):
             # Récupération en échec : on ne sait pas ce qui est en ligne,
             # donc on n'ajoute ni n'expire rien pour cette société.
             continue
-        matching = [j for j in jobs if matches_keywords(j["title"])]
+        matching = [j for j in jobs if is_relevant(j, company)]
         current_ids = {j["url"] for j in matching}  # l'URL sert d'identifiant unique
 
         # Ajoute les offres jamais vues ; remet à trier une offre expirée qui

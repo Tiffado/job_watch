@@ -99,8 +99,14 @@ Dans `companies.json`, ajouter une entrée avec son `type` et son `token` ou son
 | `greenhouse` | `token` | `job-boards.greenhouse.io/<token>` |
 | `lever` | `token` | `jobs.lever.co/<token>` |
 | `ashby` | `token` | `jobs.ashbyhq.com/<token>` |
+| `smartrecruiters` | `token` | `jobs.smartrecruiters.com/<token>` |
+| `workable` | `token` | `apply.workable.com/<token>` |
 | `teamtailor_html` | `url` | page « jobs » d'un site Teamtailor |
 | `generic` | `url` | n'importe quelle page carrières |
+
+Option `"lille_only": true` : ne garde que les offres situées dans la métropole lilloise ou en
+télétravail (liste `LILLE_AREA` de `job_watch.py`). Utile pour les groupes qui publient des
+centaines d'offres ailleurs (Decathlon, Devoteam, Talan…). Les offres sans lieu sont écartées.
 
 ## Lancer en local
 
