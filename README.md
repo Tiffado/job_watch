@@ -62,10 +62,11 @@ L'appli est ensuite servie sur `https://<pseudo>.github.io/job_watch/`.
 
 ### 2. Créer un Personal Access Token
 
-Il permet à l'appli de lire et d'écrire `jobs_feed.json`.
+Il permet à l'appli de lire et d'écrire `jobs_feed.json`, et de lire les verdicts du dépôt privé.
 
 1. https://github.com/settings/personal-access-tokens/new
-2. **Repository access** : « Only select repositories » → `job_watch`.
+2. **Repository access** : « Only select repositories » → `job_watch` et le dépôt privé des
+   verdicts.
 3. **Repository permissions** → **Contents** : « Read and write ».
 4. Copier le token tout de suite (il ne sera plus affiché).
 
