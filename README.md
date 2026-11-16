@@ -30,14 +30,12 @@
 
 Le script ne touche jamais aux offres `saved`, `applied` ou `deleted`.
 
-### Analyse d'une offre (optionnel)
+### Verdict offre / profil
 
-Si une clé API Anthropic et un profil sont renseignés dans les réglages, l'appli analyse
-automatiquement, une par une, les offres à trier ou sauvegardées qui n'ont pas encore d'analyse :
-elle envoie l'URL de l'offre et le profil à l'API Claude et reçoit un avis court. Le bouton
-« Analyser avec Claude » relance une analyse à la main.
-
-Chaque carte affiche alors le niveau de match d'un coup d'œil (bordure gauche et pastille) :
+Chaque jour, après le passage du script, un traitement local (hors de ce dépôt) compare les
+nouvelles offres à mon profil et écrit son verdict dans `matches.json`, dans un **dépôt privé**.
+L'appli lit ce fichier avec le même token et affiche le niveau de match sur chaque carte (bordure
+gauche et pastille), avec l'analyse sous « Voir l'analyse » :
 
 | Pastille | Signification |
 |---|---|
@@ -45,9 +43,15 @@ Chaque carte affiche alors le niveau de match d'un coup d'œil (bordure gauche e
 | orange `●●○ Match moyen` | proche, avec des écarts |
 | rouge `●○○ Match faible` | écarts importants |
 | gris `✕ Hors cible` | stage, alternance, junior ou autre métier |
+| `? À vérifier` | pas une vraie offre, ou fiche introuvable |
+| `… Verdict au prochain passage` | offre pas encore analysée |
+| `🔒 Verdicts inaccessibles` | le token n'a pas accès au dépôt privé |
 
-Les analyses restent **sur le téléphone** (`localStorage`) : elles ne sont jamais écrites dans
-`jobs_feed.json`, ce dépôt étant public. Chaque analyse est facturée sur la clé API utilisée.
+Les verdicts ne sont jamais écrits dans `jobs_feed.json`, ce dépôt étant public.
+
+Le bouton « Analyser avec Claude » reste disponible pour une analyse ponctuelle : il demande une
+clé API Anthropic (facturée à l'usage) et un profil dans les réglages, et garde le résultat sur le
+téléphone.
 
 ## Installation
 

@@ -391,17 +391,24 @@ function renderSettings() {
       <input id="cfg-repo" placeholder="ex: Job_Watch" value="${config?.repo || "job_watch"}" />
       <label>Branche</label>
       <input id="cfg-branch" placeholder="main" value="${config?.branch || "main"}" />
+      <label>Dépôt privé des verdicts (offre / profil)</label>
+      <input id="cfg-data-repo" placeholder="job_watch_data" value="${config?.dataRepo || "job_watch_data"}" />
       <label>Personal Access Token (fine-grained, Contents: Read & write)</label>
       <input id="cfg-token" type="password" placeholder="github_pat_..." value="${config?.token || ""}" />
       <div class="hint">
         Le token reste uniquement sur ton téléphone (stocké localement dans le
         navigateur), il n'est jamais envoyé ailleurs qu'à GitHub. Crée-le sur
         github.com → Settings → Developer settings → Fine-grained tokens,
-        limité à ce seul repo, permission "Contents: Read and write".
+        limité au repo des offres et au dépôt privé des verdicts, permission
+        "Contents: Read and write".
       </div>
     </div>
     <div id="settings-panel">
-      <h2>Analyse des offres (Claude)</h2>
+      <h2>Analyse manuelle (optionnel)</h2>
+      <div class="hint">
+        Les verdicts quotidiens arrivent seuls depuis le dépôt privé. Ces
+        réglages ne servent qu'au bouton « Analyser avec Claude ».
+      </div>
       <label>Clé API Anthropic</label>
       <input id="cfg-claude-key" type="password" placeholder="sk-ant-..." value="${config?.claudeApiKey || ""}" />
       <label>Ton profil / CV (collé en texte)</label>
@@ -421,6 +428,7 @@ function renderSettings() {
       owner: document.getElementById("cfg-owner").value.trim(),
       repo: document.getElementById("cfg-repo").value.trim(),
       branch: document.getElementById("cfg-branch").value.trim() || "main",
+      dataRepo: document.getElementById("cfg-data-repo").value.trim() || "job_watch_data",
       token: document.getElementById("cfg-token").value.trim(),
       claudeApiKey: document.getElementById("cfg-claude-key").value.trim(),
       cvText: document.getElementById("cfg-cv").value,
@@ -431,8 +439,9 @@ function renderSettings() {
   };
 }
 
-async function githubGetFile() {
-  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/jobs_feed.json?ref=${config.branch}`;
+// Lit un fichier JSON d'un dépôt via l'API GitHub (par défaut : le feed).
+async function githubGetFile(repo = config.repo, path = "jobs_feed.json") {
+  const url = `https://api.github.com/repos/${config.owner}/${repo}/contents/${path}?ref=${config.branch}`;
   const res = await fetch(url, {
     cache: "no-store", // toujours la dernière version, jamais celle du cache navigateur
     headers: {
@@ -444,6 +453,34 @@ async function githubGetFile() {
   const data = await res.json();
   const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ""))));
   return { json: JSON.parse(content), sha: data.sha };
+}
+
+// Verdicts du traitement quotidien, lus dans le dépôt privé (matches.json) :
+// { updated, matches: { [offerId]: { level, date, analysis } } }
+let batchMatches = {};
+let matchesStatus = "none"; // "ok" | "error" | "none"
+let matchesUpdated = null;
+
+async function loadMatches() {
+  try {
+    const { json } = await githubGetFile(config.dataRepo || "job_watch_data", "matches.json");
+    batchMatches = json.matches || {};
+    matchesUpdated = json.updated || null;
+    matchesStatus = "ok";
+  } catch (e) {
+    matchesStatus = "error"; // dépôt absent ou token sans accès : le feed reste utilisable
+    toast("Verdicts inaccessibles : donne à ton token l'accès au dépôt privé");
+  }
+  applyMatches();
+}
+
+// Les verdicts du traitement quotidien priment sur une analyse manuelle.
+function applyMatches() {
+  Object.entries(batchMatches).forEach(([id, m]) => {
+    const expanded = analysisCache[id]?.expanded === true;
+    const text = (m.level ? `MATCH : ${m.level}\n` : "") + (m.analysis || "");
+    analysisCache[id] = { status: "done", text, expanded, source: "batch", level: m.level || null };
+  });
 }
 
 async function githubPutFile(newFeed, sha, message) {
@@ -484,7 +521,9 @@ async function loadFeed() {
     const { json, sha } = await githubGetFile();
     useFeed(json, sha);
     render();
-    analyzePendingJobs(); // sans await : l'appli reste utilisable pendant les analyses
+    await loadMatches();
+    updateSubStatus();
+    render();
   } catch (e) {
     document.getElementById("sub-status").textContent = "Erreur de chargement";
     document.getElementById("main").innerHTML = `<div class="empty">Impossible de charger jobs_feed.json.<br>Vérifie tes réglages (⚙) et que le fichier existe bien dans le repo.<br><br>${e.message}</div>`;
@@ -502,8 +541,13 @@ function useFeed(json, sha) {
       analysisCache[j.id] = { status: "done", text: analyses[j.id], expanded: false };
     }
   });
+  updateSubStatus();
+}
+
+function updateSubStatus() {
+  const verdicts = matchesStatus === "ok" && matchesUpdated ? ` · verdicts du ${matchesUpdated}` : "";
   document.getElementById("sub-status").textContent =
-    `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)`;
+    `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)${verdicts}`;
 }
 
 // Les écritures passent une par une : deux clics rapprochés ne partent plus
@@ -644,6 +688,7 @@ const MATCH_LEVELS = {
 function matchLevel(job) {
   const state = analysisCache[job.id];
   if (!state || state.status !== "done") return null;
+  if (state.source === "batch") return state.level ? MATCH_LEVELS[state.level] || null : null;
   const found = state.text.match(/match[^:\n]*:\s*\**\s*(fort|moyen|faible|hors cible)/i);
   return found ? MATCH_LEVELS[found[1].toLowerCase()] : null;
 }
@@ -655,9 +700,10 @@ function renderMatchPill(job, match) {
   const pill = text => `<span class="match-pill match-pending">${text}</span>`;
   if (state && state.status === "loading") return pill("⏳ Analyse…");
   if (state && state.status === "error") return pill("⚠ Analyse en échec");
+  if (state && state.source === "batch") return pill("? À vérifier");
   if (state && state.status === "done") return pill("? Niveau non lu");
-  if (!config?.claudeApiKey || !config?.cvText) return pill("⚙ Clé API ou CV manquant");
-  return pill("… En attente d'analyse");
+  if (matchesStatus === "error") return pill("🔒 Verdicts inaccessibles");
+  return pill("… Verdict au prochain passage");
 }
 
 function renderAnalyzeButton(job) {
@@ -688,24 +734,6 @@ function toggleAnalysis(jobId) {
   if (!state) return;
   state.expanded = state.expanded === false;
   render();
-}
-
-// Analyse automatiquement, une par une, les offres à trier ou sauvegardées qui
-// n'ont pas encore d'analyse, pour que le niveau de match s'affiche sans clic.
-// Une offre en échec n'est pas relancée automatiquement (bouton Réessayer).
-let autoAnalysisRunning = false;
-
-async function analyzePendingJobs() {
-  if (autoAnalysisRunning || !config?.claudeApiKey || !config?.cvText) return;
-  autoAnalysisRunning = true;
-  try {
-    const pending = feed.filter(j => (j.status === "new" || j.status === "saved") && !analysisCache[j.id]);
-    for (const job of pending) {
-      await analyzeJob(job.id);
-    }
-  } finally {
-    autoAnalysisRunning = false;
-  }
 }
 
 async function analyzeJob(jobId) {
