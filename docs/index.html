@@ -170,11 +170,28 @@
     border-color: #e3c3bf;
     color: var(--red);
   }
-  .saving-tag {
-    font-size: 11px;
-    color: #8a8474;
-    margin-top: 4px;
+  /* Niveau de match : bordure gauche + pastille, lisibles d'un coup d'œil.
+     Chaque niveau a aussi un symbole, pour ne pas dépendre de la couleur seule. */
+  .card { border-left-width: 6px; }
+  .card.match-fort    { border-left-color: #2f7d4f; }
+  .card.match-moyen   { border-left-color: #b86a00; }
+  .card.match-faible  { border-left-color: #b3432f; }
+  .card.match-hors    { border-left-color: #8a8474; }
+  .match-pill {
+    float: right;
+    margin-left: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: #fff;
+    white-space: nowrap;
   }
+  .match-pill.match-fort    { background: #2f7d4f; }
+  .match-pill.match-moyen   { background: #b86a00; }
+  .match-pill.match-faible  { background: #b3432f; }
+  .match-pill.match-hors    { background: #6b6552; }
+  .match-pill.match-pending { background: #fff; color: #8a8474; border: 1px dashed #c9c1ad; }
   .card.expired {
     opacity: 0.6;
     background: #f1efe9;
@@ -330,6 +347,28 @@ let feed = [];
 let currentTab = "new";
 const analysisCache = {}; // { [jobId]: { status: "loading"|"done"|"error", text: "" } }
 
+// Les analyses restent sur le téléphone (localStorage) : le dépôt est public,
+// elles ne sont jamais écrites dans jobs_feed.json.
+const ANALYSES_KEY = "jobwatch_analyses";
+
+function loadStoredAnalyses() {
+  try {
+    return JSON.parse(localStorage.getItem(ANALYSES_KEY) || "{}");
+  } catch (e) {
+    return {};
+  }
+}
+
+function storeAnalysis(jobId, text) {
+  const analyses = loadStoredAnalyses();
+  analyses[jobId] = text;
+  try {
+    localStorage.setItem(ANALYSES_KEY, JSON.stringify(analyses));
+  } catch (e) {
+    toast("Analyse affichée mais pas conservée sur ce téléphone");
+  }
+}
+
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -369,8 +408,9 @@ function renderSettings() {
       <textarea id="cfg-cv" rows="6" placeholder="Colle ici ton profil ou ton CV en texte...">${config?.cvText ? escapeHtml(config.cvText) : ""}</textarea>
       <button id="cfg-save">Enregistrer</button>
       <div class="hint">
-        Ta clé API et ton CV restent uniquement sur ton téléphone, jamais
-        envoyés ailleurs qu'à l'API Claude au moment de chaque analyse.
+        Ta clé API, ton CV et les analyses restent uniquement sur ton
+        téléphone : ils ne sont envoyés qu'à l'API Claude au moment de chaque
+        analyse, jamais écrits dans le dépôt GitHub (public).
         Crée une clé sur console.anthropic.com → API Keys (compte séparé de
         ton abonnement Claude Pro, facturé à l'usage).
       </div>
@@ -444,6 +484,7 @@ async function loadFeed() {
     const { json, sha } = await githubGetFile();
     useFeed(json, sha);
     render();
+    analyzePendingJobs(); // sans await : l'appli reste utilisable pendant les analyses
   } catch (e) {
     document.getElementById("sub-status").textContent = "Erreur de chargement";
     document.getElementById("main").innerHTML = `<div class="empty">Impossible de charger jobs_feed.json.<br>Vérifie tes réglages (⚙) et que le fichier existe bien dans le repo.<br><br>${e.message}</div>`;
@@ -454,10 +495,11 @@ async function loadFeed() {
 function useFeed(json, sha) {
   feed = json;
   currentSha = sha;
-  // Restaure les analyses déjà sauvegardées, repliées par défaut
+  // Restaure les analyses conservées sur le téléphone, repliées par défaut
+  const analyses = loadStoredAnalyses();
   feed.forEach(j => {
-    if (j.analysis && !analysisCache[j.id]) {
-      analysisCache[j.id] = { status: "done", text: j.analysis, expanded: false };
+    if (analyses[j.id] && !analysisCache[j.id]) {
+      analysisCache[j.id] = { status: "done", text: analyses[j.id], expanded: false };
     }
   });
   document.getElementById("sub-status").textContent =
@@ -516,19 +558,6 @@ async function setStatus(id, newStatus) {
   }
 }
 
-async function saveAnalysisToFeed(jobId, text) {
-  const entry = feed.find(j => j.id === jobId);
-  if (!entry) return;
-  const addAnalysis = list => {
-    const e = list.find(j => j.id === jobId);
-    if (e) e.analysis = text;
-  };
-  try {
-    await persistChange(addAnalysis, `Add analysis for ${entry.title}`);
-  } catch (e) {
-    toast("Analyse affichée mais pas sauvegardée (erreur GitHub)");
-  }
-}
 
 function render() {
   const main = document.getElementById("main");
@@ -575,8 +604,10 @@ function render() {
       `;
     }
 
+    const match = matchLevel(job);
     return `
-    <div class="card ${isExpired ? "expired" : ""} ${isApplied ? "applied" : ""}">
+    <div class="card ${isExpired ? "expired" : ""} ${isApplied ? "applied" : ""} ${match ? `match-${match.key}` : ""}">
+      ${renderMatchPill(job, match)}
       <div class="company">${escapeHtml(job.company)}${isExpired ? '<span class="badge-expired">Expirée</span>' : ""}${isApplied ? '<span class="badge-applied">Postulé</span>' : ""}</div>
       <h2>${escapeHtml(job.title)}</h2>
       <div class="meta">Vu le ${job.first_seen || "?"}${isExpired ? " · n'est plus en ligne" : ""}</div>
@@ -601,6 +632,29 @@ function render() {
   });
 }
 
+// Niveau de match lu dans l'analyse : première ligne "MATCH : fort" (format
+// demandé au modèle) ou ancien format "Match global : moyen".
+const MATCH_LEVELS = {
+  "fort":       { key: "fort",   label: "●●● Match fort" },
+  "moyen":      { key: "moyen",  label: "●●○ Match moyen" },
+  "faible":     { key: "faible", label: "●○○ Match faible" },
+  "hors cible": { key: "hors",   label: "✕ Hors cible" },
+};
+
+function matchLevel(job) {
+  const state = analysisCache[job.id];
+  if (!state || state.status !== "done") return null;
+  const found = state.text.match(/match[^:\n]*:\s*\**\s*(fort|moyen|faible|hors cible)/i);
+  return found ? MATCH_LEVELS[found[1].toLowerCase()] : null;
+}
+
+function renderMatchPill(job, match) {
+  if (match) return `<span class="match-pill match-${match.key}">${match.label}</span>`;
+  const state = analysisCache[job.id];
+  if (state && state.status === "loading") return `<span class="match-pill match-pending">⏳ Analyse…</span>`;
+  return "";
+}
+
 function renderAnalyzeButton(job) {
   const state = analysisCache[job.id];
   if (!state) {
@@ -621,8 +675,7 @@ function renderAnalysisResult(job) {
   if (!state || state.status === "loading") return "";
   if (state.status === "done" && state.expanded === false) return "";
   const cls = state.status === "error" ? "analysis-result error" : "analysis-result";
-  const savingTag = state.saving ? `<div class="saving-tag">💾 Sauvegarde en cours, patiente avant de rafraîchir…</div>` : "";
-  return `<div class="${cls}">${escapeHtml(state.text)}</div>${savingTag}`;
+  return `<div class="${cls}">${escapeHtml(state.text)}</div>`;
 }
 
 function toggleAnalysis(jobId) {
@@ -630,6 +683,24 @@ function toggleAnalysis(jobId) {
   if (!state) return;
   state.expanded = state.expanded === false;
   render();
+}
+
+// Analyse automatiquement, une par une, les offres à trier ou sauvegardées qui
+// n'ont pas encore d'analyse, pour que le niveau de match s'affiche sans clic.
+// Une offre en échec n'est pas relancée automatiquement (bouton Réessayer).
+let autoAnalysisRunning = false;
+
+async function analyzePendingJobs() {
+  if (autoAnalysisRunning || !config?.claudeApiKey || !config?.cvText) return;
+  autoAnalysisRunning = true;
+  try {
+    const pending = feed.filter(j => (j.status === "new" || j.status === "saved") && !analysisCache[j.id]);
+    for (const job of pending) {
+      await analyzeJob(job.id);
+    }
+  } finally {
+    autoAnalysisRunning = false;
+  }
 }
 
 async function analyzeJob(jobId) {
@@ -657,16 +728,23 @@ async function analyzeJob(jobId) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-5",
-        max_tokens: 700,
+        // Le modèle réfléchit avant de répondre (thinking adaptatif par défaut) :
+        // une marge large évite une réponse coupée. Seuls les tokens utilisés sont facturés.
+        max_tokens: 2000,
         messages: [{
           role: "user",
           content:
             `Voici mon profil / CV :\n\n${config.cvText}\n\n---\n\n` +
             `Voici l'URL d'une offre d'emploi : ${job.url}\n\n` +
             `Lis le contenu de cette page (fiche de poste) et donne un avis très concis ` +
-            `(5 lignes maximum) sur la correspondance avec mon profil : un niveau de match ` +
-            `global (fort / moyen / faible), 2-3 points de correspondance clés, et les écarts ` +
-            `principaux s'il y en a. Réponds directement, sans préambule ni formule de politesse.`,
+            `sur la correspondance avec mon profil.\n` +
+            `La première ligne doit être exactement "MATCH : fort", "MATCH : moyen", ` +
+            `"MATCH : faible" ou "MATCH : hors cible" (une seule valeur). "hors cible" : ` +
+            `stage, alternance, poste junior, ou métier différent du mien.\n` +
+            `Puis 4 lignes maximum : 2-3 points de correspondance clés, les écarts principaux, ` +
+            `le lieu et le présentiel exigés. Distingue mon expérience en production de ce que ` +
+            `je n'ai pratiqué qu'en projet personnel ou en formation. Réponds directement, ` +
+            `sans préambule ni formule de politesse.`,
         }],
         tools: [{ type: "web_fetch_20250910", name: "web_fetch", max_uses: 1 }],
       }),
@@ -683,16 +761,9 @@ async function analyzeJob(jobId) {
       .join("\n")
       .trim();
 
-    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue.", expanded: true, saving: true };
+    analysisCache[jobId] = { status: "done", text: text || "Aucune réponse exploitable reçue.", expanded: true };
+    storeAnalysis(jobId, analysisCache[jobId].text);
     render();
-    try {
-      await saveAnalysisToFeed(jobId, analysisCache[jobId].text);
-    } finally {
-      if (analysisCache[jobId]) {
-        analysisCache[jobId].saving = false;
-        render();
-      }
-    }
     return;
   } catch (e) {
     analysisCache[jobId] = { status: "error", text: `Échec de l'analyse : ${e.message}` };

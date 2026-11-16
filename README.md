@@ -32,9 +32,22 @@ Le script ne touche jamais aux offres `saved`, `applied` ou `deleted`.
 
 ### Analyse d'une offre (optionnel)
 
-Le bouton « Analyser avec Claude » de l'appli envoie l'URL de l'offre et le profil collé dans les réglages à
-l'API Claude, puis affiche un avis court sur la correspondance. L'avis est enregistré dans le champ
-`analysis` de `jobs_feed.json`, **donc visible publiquement** dans ce dépôt.
+Si une clé API Anthropic et un profil sont renseignés dans les réglages, l'appli analyse
+automatiquement, une par une, les offres à trier ou sauvegardées qui n'ont pas encore d'analyse :
+elle envoie l'URL de l'offre et le profil à l'API Claude et reçoit un avis court. Le bouton
+« Analyser avec Claude » relance une analyse à la main.
+
+Chaque carte affiche alors le niveau de match d'un coup d'œil (bordure gauche et pastille) :
+
+| Pastille | Signification |
+|---|---|
+| vert `●●● Match fort` | profil très proche |
+| orange `●●○ Match moyen` | proche, avec des écarts |
+| rouge `●○○ Match faible` | écarts importants |
+| gris `✕ Hors cible` | stage, alternance, junior ou autre métier |
+
+Les analyses restent **sur le téléphone** (`localStorage`) : elles ne sont jamais écrites dans
+`jobs_feed.json`, ce dépôt étant public. Chaque analyse est facturée sur la clé API utilisée.
 
 ## Installation
 
