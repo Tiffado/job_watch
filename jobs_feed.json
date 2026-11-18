@@ -389,7 +389,7 @@
     "title": "Data Product Manager - Finance FP&A (f/m/d)",
     "url": "https://job-boards.eu.greenhouse.io/decathlontechnology/jobs/4977048101",
     "first_seen": "2026-11-16",
-    "status": "new"
+    "status": "expired"
   },
   {
     "id": "https://job-boards.eu.greenhouse.io/decathlontechnology/jobs/4984088101",
@@ -541,6 +541,14 @@
     "title": "Data Engineer",
     "url": "https://job-boards.greenhouse.io/mirakllabs/jobs/4467661004",
     "first_seen": "2026-11-17",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.smartrecruiters.com/devoteam/744000162314209",
+    "company": "Devoteam",
+    "title": "Directeur d'applications - Contexte Data H/F",
+    "url": "https://jobs.smartrecruiters.com/devoteam/744000162314209",
+    "first_seen": "2026-11-18",
     "status": "new"
   }
 ]
