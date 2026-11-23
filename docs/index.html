@@ -192,6 +192,16 @@
   .match-pill.match-faible  { background: #b3432f; }
   .match-pill.match-hors    { background: #6b6552; }
   .match-pill.match-pending { background: #fff; color: #8a8474; border: 1px dashed #c9c1ad; }
+  button.dismissed-toggle {
+    display: block;
+    margin: 6px auto 0;
+    background: none;
+    border: none;
+    color: #8a8474;
+    font-size: 12.5px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
   .card.expired {
     opacity: 0.6;
     background: #f1efe9;
@@ -544,10 +554,26 @@ function useFeed(json, sha) {
   updateSubStatus();
 }
 
+// Une offre jugée faible, hors cible ou sans vrai match (niveau vide) par le
+// traitement quotidien n'est pas montrée dans « À trier ». Une offre pas
+// encore analysée reste visible : elle peut se révéler intéressante.
+const INTERESTING_LEVELS = ["fort", "moyen"];
+let showDismissed = false;
+
+function isDismissedByBatch(job) {
+  const m = batchMatches[job.id];
+  return Boolean(m) && !INTERESTING_LEVELS.includes(m.level);
+}
+
+function toSortList() {
+  return feed.filter(j => j.status === "new" || j.status === "expired");
+}
+
 function updateSubStatus() {
   const verdicts = matchesStatus === "ok" && matchesUpdated ? ` · verdicts du ${matchesUpdated}` : "";
+  const toSort = toSortList().filter(j => !isDismissedByBatch(j)).length;
   document.getElementById("sub-status").textContent =
-    `${feed.filter(j => j.status === "new" || j.status === "expired").length} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)${verdicts}`;
+    `${toSort} à trier · ${feed.filter(j => j.status === "saved").length} sauvegardée(s) · ${feed.filter(j => j.status === "applied").length} postulée(s)${verdicts}`;
 }
 
 // Les écritures passent une par une : deux clics rapprochés ne partent plus
@@ -606,23 +632,35 @@ async function setStatus(id, newStatus) {
 function render() {
   const main = document.getElementById("main");
   let list;
+  let dismissedCount = 0;
   if (currentTab === "new") {
-    list = feed.filter(j => j.status === "new" || j.status === "expired");
+    list = toSortList();
+    dismissedCount = list.filter(isDismissedByBatch).length;
+    if (!showDismissed) list = list.filter(j => !isDismissedByBatch(j));
   } else {
     list = feed.filter(j => j.status === currentTab);
   }
 
+  // Lien en bas de « À trier » pour voir, si besoin, les offres écartées.
+  const dismissedToggle = currentTab === "new" && dismissedCount
+    ? `<button class="dismissed-toggle" id="dismissed-toggle">${showDismissed ? "Masquer" : "Afficher"} les ${dismissedCount} offre(s) écartée(s) par le verdict quotidien (faible, hors cible…)</button>`
+    : "";
+
   if (list.length === 0) {
     const emptyMsg = {
-      new: "Rien à trier pour l'instant.<br>Reviens quand le script quotidien aura trouvé du nouveau.",
+      new: "Rien d'intéressant à trier pour l'instant.<br>Reviens quand le script quotidien aura trouvé du nouveau.",
       saved: "Aucune offre sauvegardée.",
       applied: "Aucune candidature en cours.",
     };
-    main.innerHTML = `<div class="empty">${emptyMsg[currentTab]}</div>`;
+    main.innerHTML = `<div class="empty">${emptyMsg[currentTab]}</div>${dismissedToggle}`;
+    bindDismissedToggle();
     return;
   }
 
-  list.sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""));
+  // Les meilleurs verdicts d'abord (fort, puis moyen, puis pas encore analysé),
+  // puis les plus récentes.
+  const rank = job => ({ fort: 0, moyen: 1 })[batchMatches[job.id]?.level] ?? 2;
+  list.sort((a, b) => rank(a) - rank(b) || (b.first_seen || "").localeCompare(a.first_seen || ""));
 
   main.innerHTML = list.map(job => {
     const isExpired = job.status === "expired";
@@ -663,7 +701,8 @@ function render() {
       <div class="actions">${actionsHtml}</div>
     </div>
   `;
-  }).join("");
+  }).join("") + dismissedToggle;
+  bindDismissedToggle();
 
   main.querySelectorAll("button[data-action]").forEach(btn => {
     btn.addEventListener("click", () => setStatus(btn.dataset.id, btn.dataset.action));
@@ -674,6 +713,15 @@ function render() {
   main.querySelectorAll("button[data-toggle]").forEach(btn => {
     btn.addEventListener("click", () => toggleAnalysis(btn.dataset.toggle));
   });
+}
+
+function bindDismissedToggle() {
+  const btn = document.getElementById("dismissed-toggle");
+  if (!btn) return;
+  btn.onclick = () => {
+    showDismissed = !showDismissed;
+    render();
+  };
 }
 
 // Niveau de match lu dans l'analyse : première ligne "MATCH : fort" (format

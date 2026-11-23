@@ -47,6 +47,10 @@ gauche et pastille), avec l'analyse sous « Voir l'analyse » :
 | `… Verdict au prochain passage` | offre pas encore analysée |
 | `🔒 Verdicts inaccessibles` | le token n'a pas accès au dépôt privé |
 
+Dans « À trier », seules les offres **fort**, **moyen** ou pas encore analysées sont affichées, les
+meilleures en premier. Les offres jugées faibles, hors cible ou sans vraie offre sont masquées ; un
+lien en bas de liste permet de les afficher.
+
 Les verdicts ne sont jamais écrits dans `jobs_feed.json`, ce dépôt étant public.
 
 Le bouton « Analyser avec Claude » reste disponible pour une analyse ponctuelle : il demande une
