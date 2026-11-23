@@ -565,7 +565,7 @@
     "title": "Senior Data Analyst/Scientist - M/W",
     "url": "https://careers.manomano.jobs/en-GB/jobs/8672799-senior-data-analyst-scientist-m-w",
     "first_seen": "2026-11-21",
-    "status": "new"
+    "status": "expired"
   },
   {
     "id": "https://job-boards.eu.greenhouse.io/decathlontechnology/jobs/5043720101",
@@ -708,6 +708,22 @@
     "company": "OVHcloud",
     "title": "Software Developer - Data Security F/H/N",
     "url": "https://careers.ovhcloud.com/job/ROUBAIX-Software-Developer-Data-Security-FHN-59100/1451553133/",
+    "first_seen": "2026-11-23",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.ashbyhq.com/backmarket/3f405891-e2e9-4943-877d-f9c97096908e",
+    "company": "Back Market",
+    "title": "Senior Data Analyst - Business Performance UK & US ",
+    "url": "https://jobs.ashbyhq.com/backmarket/3f405891-e2e9-4943-877d-f9c97096908e",
+    "first_seen": "2026-11-23",
+    "status": "new"
+  },
+  {
+    "id": "https://careers.manomano.jobs/en-GB/jobs/8672799-senior-data-analyst-scientist",
+    "company": "ManoMano",
+    "title": "Senior Data Analyst/Scientist",
+    "url": "https://careers.manomano.jobs/en-GB/jobs/8672799-senior-data-analyst-scientist",
     "first_seen": "2026-11-23",
     "status": "new"
   }
