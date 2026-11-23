@@ -100,5 +100,74 @@
     "type": "smartrecruiters",
     "token": "talan",
     "lille_only": true
+  },
+  {
+    "name": "Sopra Steria",
+    "type": "smartrecruiters",
+    "token": "SopraSteria1",
+    "lille_only": true
+  },
+  {
+    "name": "SFEIR",
+    "type": "lever",
+    "token": "sfeir",
+    "lille_only": true
+  },
+  {
+    "name": "Ippon",
+    "type": "lever",
+    "token": "ippon",
+    "lille_only": true
+  },
+  {
+    "name": "OCTO Technology",
+    "type": "smartrecruiters",
+    "token": "octotechnology",
+    "lille_only": true
+  },
+  {
+    "name": "Scalian",
+    "type": "smartrecruiters",
+    "token": "scalian",
+    "lille_only": true
+  },
+  {
+    "name": "Magellan",
+    "type": "smartrecruiters",
+    "token": "magellan",
+    "lille_only": true
+  },
+  {
+    "name": "Nexton",
+    "type": "smartrecruiters",
+    "token": "nexton",
+    "lille_only": true
+  },
+  {
+    "name": "Alten",
+    "type": "smartrecruiters",
+    "token": "alten",
+    "lille_only": true
+  },
+  {
+    "name": "OVHcloud",
+    "type": "successfactors_rss",
+    "url": "https://careers.ovhcloud.com",
+    "cities": [
+      "Roubaix",
+      "Croix",
+      "Lille"
+    ],
+    "lille_only": true
+  },
+  {
+    "name": "Worldline",
+    "type": "successfactors_rss",
+    "url": "https://jobs.worldline.com",
+    "cities": [
+      "Seclin",
+      "Lille"
+    ],
+    "lille_only": true
   }
 ]

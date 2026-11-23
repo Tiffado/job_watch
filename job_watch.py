@@ -40,6 +40,7 @@ import re
 import sys
 from datetime import date
 from pathlib import Path
+from xml.etree import ElementTree
 
 import requests
 from bs4 import BeautifulSoup
@@ -51,6 +52,10 @@ FEED_FILE = HERE / "jobs_feed.json"
 NEW_ENTRIES_FILE = HERE / "new_entries.json"
 
 KEYWORDS = ["data", "données"]
+
+# Intitulé "data" : mot qui commence par data (data, dataops, database…) ou
+# "données", mais pas les postes de datacenter / datacentre.
+DATA_PATTERN = re.compile(r"\bdata(?!cent)|données", re.IGNORECASE)
 
 # Contrats étudiants : exclus même si l'intitulé contient un mot-clé data.
 # Mots entiers uniquement, pour ne pas écarter "International" ou "Internal".
@@ -141,6 +146,26 @@ def fetch_workable(token: str):
     ]
 
 
+def fetch_successfactors_rss(base_url: str, cities: list):
+    """Sites carrières SAP SuccessFactors : flux RSS de recherche, une requête par ville.
+
+    Le flux renvoie au plus 20 offres par requête (les plus récentes) ; filtrer sur
+    "data" et sur une ville garde chaque requête sous cette limite. L'intitulé
+    du flux contient le lieu entre parenthèses : "Data Engineer (ROUBAIX, FR, 59100)".
+    """
+    jobs = {}
+    for city in cities:
+        url = f"{base_url}/services/rss/job/?locale=fr_FR&keywords=(data) AND ({city})"
+        resp = requests.get(url, timeout=20, headers=BROWSER_HEADERS)
+        resp.raise_for_status()
+        for item in ElementTree.fromstring(resp.content).iter("item"):
+            raw_title = item.findtext("title", "")
+            title, _, location = raw_title.rpartition(" (")
+            link = item.findtext("link", "").split("?")[0]  # sans les paramètres de suivi
+            jobs[link] = {"title": title or raw_title, "url": link, "location": location.rstrip(")")}
+    return list(jobs.values())
+
+
 def fetch_teamtailor_html(url: str):
     resp = requests.get(url, timeout=20, headers=BROWSER_HEADERS)
     resp.raise_for_status()
@@ -187,6 +212,8 @@ def fetch_jobs(company: dict):
             return fetch_smartrecruiters(company["token"])
         if company["type"] == "workable":
             return fetch_workable(company["token"])
+        if company["type"] == "successfactors_rss":
+            return fetch_successfactors_rss(company["url"], company["cities"])
         if company["type"] == "teamtailor_html":
             return fetch_teamtailor_html(company["url"])
         return fetch_generic(company["url"])
@@ -196,10 +223,9 @@ def fetch_jobs(company: dict):
 
 
 def matches_keywords(title: str) -> bool:
-    t = title.lower()
-    if EXCLUDED_PATTERN.search(t):
+    if EXCLUDED_PATTERN.search(title):
         return False
-    return any(k in t for k in KEYWORDS)
+    return bool(DATA_PATTERN.search(title))
 
 
 # Communes de la métropole lilloise, et télétravail, pour les sociétés marquées
@@ -221,7 +247,9 @@ def is_relevant(job: dict, company: dict) -> bool:
     if not matches_keywords(job["title"]):
         return False
     if company.get("lille_only"):
-        return in_lille_area(job.get("location", ""))
+        # Certains job boards laissent le lieu vide et le mettent dans l'intitulé
+        # ("Lead Data Engineer Lille") : on regarde les deux.
+        return in_lille_area(f"{job.get('location', '')} {job['title']}")
     return True
 
 

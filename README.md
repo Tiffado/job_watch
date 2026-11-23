@@ -101,6 +101,7 @@ Dans `companies.json`, ajouter une entrée avec son `type` et son `token` ou son
 | `ashby` | `token` | `jobs.ashbyhq.com/<token>` |
 | `smartrecruiters` | `token` | `jobs.smartrecruiters.com/<token>` |
 | `workable` | `token` | `apply.workable.com/<token>` |
+| `successfactors_rss` | `url` + `cities` | site carrières SAP SuccessFactors (ex. `careers.ovhcloud.com`) : flux RSS « data » par ville, 20 offres max par ville |
 | `teamtailor_html` | `url` | page « jobs » d'un site Teamtailor |
 | `generic` | `url` | n'importe quelle page carrières |
 
