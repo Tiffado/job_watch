@@ -565,7 +565,7 @@
     "title": "Senior Data Analyst/Scientist - M/W",
     "url": "https://careers.manomano.jobs/en-GB/jobs/8672799-senior-data-analyst-scientist-m-w",
     "first_seen": "2026-11-21",
-    "status": "new"
+    "status": "expired"
   },
   {
     "id": "https://job-boards.eu.greenhouse.io/decathlontechnology/jobs/5043720101",
@@ -725,7 +725,7 @@
     "title": "Senior Data Analyst/Scientist",
     "url": "https://careers.manomano.jobs/en-GB/jobs/8672799-senior-data-analyst-scientist",
     "first_seen": "2026-11-23",
-    "status": "expired"
+    "status": "new"
   },
   {
     "id": "https://jobs.smartrecruiters.com/kiabi/744000163457170",
@@ -741,7 +741,7 @@
     "title": "Ingénieur Data & GenAI (F/H) - Lille",
     "url": "https://jobs.smartrecruiters.com/talan/744000163438299",
     "first_seen": "2026-11-24",
-    "status": "new"
+    "status": "expired"
   },
   {
     "id": "https://jobs.lever.co/pigment/88f179ca-b73b-4143-8d06-ed47300b53d7",
@@ -749,6 +749,22 @@
     "title": "Senior Product Manager (DataFetch)",
     "url": "https://jobs.lever.co/pigment/88f179ca-b73b-4143-8d06-ed47300b53d7",
     "first_seen": "2026-11-25",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.smartrecruiters.com/nexton/744000164048899",
+    "company": "Nexton",
+    "title": "Product Manager Data H/F",
+    "url": "https://jobs.smartrecruiters.com/nexton/744000164048899",
+    "first_seen": "2026-11-27",
+    "status": "new"
+  },
+  {
+    "id": "https://jobs.smartrecruiters.com/nexton/744000164047463",
+    "company": "Nexton",
+    "title": "Business Analyst Data senior H/F",
+    "url": "https://jobs.smartrecruiters.com/nexton/744000164047463",
+    "first_seen": "2026-11-27",
     "status": "new"
   }
 ]
